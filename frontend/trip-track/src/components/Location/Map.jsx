@@ -62,7 +62,7 @@ DraggableMarker.propTypes = {
   moveMarker: PropTypes.func.isRequired,  // moveMarker는 함수형 필수값
 };
 
-const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
+const Map = ({ onAddLocation, markers = [], selectedDate, onMarkerClick }) => {
   const [localMarkers, setLocalMarkers] = useState([]); // 전달된 마커를 로컬 상태로 관리
   const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태
   const mapRef = useRef(null);
@@ -79,8 +79,13 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
       console.log('마커 없음, 초기화');
       setLocalMarkers([]); // 마커가 없을 경우 상태 초기화
     }
-  }, [markers]);
+  }, [markers, selectedDate]);
 
+   // 이곳에 추가
+   useEffect(() => {
+    console.log('Map 컴포넌트로 전달된 markers:', markers); // markers prop 확인
+  }, [markers]);
+  
   useEffect(() => {
     if (mapRef.current && localMarkers.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
@@ -174,6 +179,7 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
 
       {/* GoogleMap 컴포넌트에 key 추가 */}
       <GoogleMap
+        key={selectedDate}  // selectedDate 변경 시 마다 지도를 리렌더링
         mapContainerStyle={containerStyle}
         center={center}
         zoom={10}
@@ -245,6 +251,7 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
 Map.propTypes = {
   onAddLocation: PropTypes.func.isRequired,
   markers: PropTypes.array.isRequired, // 추가된 props
+  selectedDate: PropTypes.string.isRequired,  // selectedDate는 필수 prop으로 받음
   onMarkerClick: PropTypes.func, // onMarkerClick prop 추가
 };
 

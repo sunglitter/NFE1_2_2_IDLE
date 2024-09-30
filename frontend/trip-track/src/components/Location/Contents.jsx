@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Contents = ({ selectedMarker, onSaveContent }) => {
-  const [text, setText] = useState(selectedMarker ? selectedMarker.text : ''); // 텍스트 상태
-  const [image, setImage] = useState(null); // 이미지 상태
+const Contents = ({ selectedMarker, content, onSaveContent }) => {
+  const [text, setText] = useState(content?.text || ''); // 텍스트 상태
+  const [image, setImage] = useState(content?.image || null); // 이미지 상태
 
   // 이미지 업로드 처리 함수
   const handleImageUpload = (e) => {
@@ -74,12 +74,16 @@ const Contents = ({ selectedMarker, onSaveContent }) => {
   );
 };
 
+// PropTypes로 props 검증
 Contents.propTypes = {
-  selectedMarker: PropTypes.shape({
-    info: PropTypes.string.isRequired,
-    text: PropTypes.string,
-  }),
-  onSaveContent: PropTypes.func.isRequired,
-};
+    selectedMarker: PropTypes.shape({
+      info: PropTypes.string.isRequired, // 마커 정보
+    }).isRequired,
+    content: PropTypes.shape({
+      text: PropTypes.string, // 텍스트 콘텐츠
+      image: PropTypes.string, // 이미지 URL
+    }),
+    onSaveContent: PropTypes.func.isRequired, // 저장 함수
+  };
 
 export default Contents;

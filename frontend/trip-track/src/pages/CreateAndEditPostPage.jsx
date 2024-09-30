@@ -13,11 +13,25 @@ const CreateAndEditPostPage = () => {
   const [selectedDate, setSelectedDate] = useState(null); // 현재 선택된 날짜
   const [selectedMarker, setSelectedMarker] = useState(null); // 현재 선택된 마커
   const [mapsData, setMapsData] = useRecoilState(mapsDataState); // Recoil 상태로 관리
+   // 마커 상태 추가
+   const [markers, setMarkers] = useState([]); // 현재 날짜에 해당하는 마커 상태
 
   useEffect(() => {
     // Recoil 상태를 콘솔로 확인하여 문제 디버깅
     console.log('현재 mapsData 상태:', mapsData);
   }, [mapsData]);
+
+  useEffect(() => {
+    console.log('선택된 날짜:', selectedDate);
+    console.log('선택된 날짜의 마커:', mapsData[selectedDate]); // 선택된 날짜의 마커 상태 확인
+
+    // 선택된 날짜에 해당하는 마커를 불러와서 상태로 설정
+    if (selectedDate && mapsData[selectedDate]) {
+      setMarkers(mapsData[selectedDate]); // 해당 날짜에 해당하는 마커를 로컬 상태로 저장
+    } else {
+      setMarkers([]); // 선택된 날짜에 마커가 없으면 빈 배열로 설정
+    }
+  }, [selectedDate, mapsData]);
 
   const handleDoneClick = () => {
     if (!startDate || !endDate) {
@@ -55,7 +69,7 @@ const CreateAndEditPostPage = () => {
     setMapsData((prevMapsData) => {
       const updatedData = {
         ...prevMapsData,
-        [date]: [...(prevMapsData[date] || []), newLocation], // 기존 마커에 새 마커 추가
+        [date]: [...(prevMapsData[date] || []), { ...newLocation, content: '' }], // 기존 마커에 새 마커 추가
       };
       console.log('업데이트된 mapsData:', updatedData); // 업데이트된 상태 확인
       return updatedData;
@@ -73,7 +87,7 @@ const CreateAndEditPostPage = () => {
 
     setMapsData((prevMapsData) => {
       const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
-        marker.info === selectedMarker.info ? { ...marker, ...content } : marker
+        marker.info === selectedMarker.info ? { ...marker, content } : marker
       );
 
       return {
@@ -84,7 +98,7 @@ const CreateAndEditPostPage = () => {
 
     console.log('콘텐츠 저장 완료:', content);
   };
-  
+
   return (
     <div>
       <h2>Create or Edit Post</h2>
@@ -134,20 +148,28 @@ const CreateAndEditPostPage = () => {
         </div>
       )}
 
-      {selectedDate && (
-        <div style={{ marginTop: '20px' }}>
-          <h3>{selectedDate}</h3>
-          <Map
-            key={selectedDate}
-            onAddLocation={(newLocation) => handleAddLocation(selectedDate, newLocation)}
-            markers={mapsData[selectedDate]}
-            onMarkerClick={handleMarkerClick} // 마커 클릭 시 호출
-          />
+{selectedDate && (
+        // Flexbox를 사용하여 지도와 콘텐츠를 가로로 나란히 배치
+        <div style={{ display: 'flex', marginTop: '20px' }}>
+          {/* 지도를 좌측에 배치 */}
+          <div style={{ flex: 1, marginRight: '20px' }}>
+            <h3>{selectedDate}</h3>
+            <Map
+              key={selectedDate}
+              onAddLocation={(newLocation) => handleAddLocation(selectedDate, newLocation)}
+              markers={markers} // 현재 날짜에 맞는 마커를 넘겨줌
+              selectedDate={selectedDate}  // selectedDate 전달
+              onMarkerClick={handleMarkerClick} // 마커 클릭 시 호출
+            />
+          </div>
+
+          {/* 콘텐츠를 우측에 배치 */}
+          {selectedMarker && (
+            <div style={{ flexBasis: '300px' }}> {/* 콘텐츠를 고정된 폭으로 설정 */}
+              <Contents selectedMarker={selectedMarker} onSaveContent={handleSaveContent} />
+            </div>
+          )}
         </div>
-      )}
-    {/* 장소 정보 콘텐츠 입력 UI */}
-    {selectedMarker && (
-        <Contents selectedMarker={selectedMarker} onSaveContent={handleSaveContent} />
       )}
     </div>
   );
