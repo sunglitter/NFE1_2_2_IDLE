@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import Map from '../components/Location/Map';
+import Map from '../components/Location/Map.jsx';
+import Contents from '../components/Location/Contents.jsx';
 import { useRecoilState } from 'recoil';
 import { mapsDataState } from '../recoil/mapsState.js'; // Recoil 상태 가져오기
 
@@ -10,6 +11,7 @@ const CreateAndEditPostPage = () => {
   const [endDate, setEndDate] = useState(null); // 종료 날짜 상태
   const [dateRange, setDateRange] = useState([]); // 선택된 날짜 범위
   const [selectedDate, setSelectedDate] = useState(null); // 현재 선택된 날짜
+  const [selectedMarker, setSelectedMarker] = useState(null); // 현재 선택된 마커
   const [mapsData, setMapsData] = useRecoilState(mapsDataState); // Recoil 상태로 관리
 
   useEffect(() => {
@@ -60,6 +62,29 @@ const CreateAndEditPostPage = () => {
     });
   };
 
+   // 마커 클릭 시 호출되는 함수
+   const handleMarkerClick = (marker) => {
+    setSelectedMarker(marker); // 선택된 마커를 상태로 저장
+  }
+
+    // 콘텐츠 저장 처리 함수
+  const handleSaveContent = (content) => {
+    if (!selectedMarker) return;
+
+    setMapsData((prevMapsData) => {
+      const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
+        marker.info === selectedMarker.info ? { ...marker, ...content } : marker
+      );
+
+      return {
+        ...prevMapsData,
+        [selectedDate]: updatedMarkers,
+      };
+    });
+
+    console.log('콘텐츠 저장 완료:', content);
+  };
+  
   return (
     <div>
       <h2>Create or Edit Post</h2>
@@ -116,8 +141,13 @@ const CreateAndEditPostPage = () => {
             key={selectedDate}
             onAddLocation={(newLocation) => handleAddLocation(selectedDate, newLocation)}
             markers={mapsData[selectedDate]}
+            onMarkerClick={handleMarkerClick} // 마커 클릭 시 호출
           />
         </div>
+      )}
+    {/* 장소 정보 콘텐츠 입력 UI */}
+    {selectedMarker && (
+        <Contents selectedMarker={selectedMarker} onSaveContent={handleSaveContent} />
       )}
     </div>
   );

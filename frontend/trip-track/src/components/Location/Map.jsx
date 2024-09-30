@@ -62,18 +62,32 @@ DraggableMarker.propTypes = {
   moveMarker: PropTypes.func.isRequired,  // moveMarker는 함수형 필수값
 };
 
-const Map = ({ onAddLocation, markers = [] }) => {
+const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
   const [localMarkers, setLocalMarkers] = useState([]); // 전달된 마커를 로컬 상태로 관리
   const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태
   const mapRef = useRef(null);
   const [autocomplete, setAutocomplete] = useState(null); // Autocomplete 상태
   const markerOrder = useRef(1); // 마커 순서를 추적하는 변수 (Ref로 관리)
 
-  // 전달된 markers가 변경될 때 한 번만 localMarkers에 설정
+  // 전달된 markers가 변경될 때마다 localMarkers에 설정
   useEffect(() => {
-    setLocalMarkers(markers || []);
-    markerOrder.current = markers.length + 1; // 마커 순서를 유지
+    if (markers && markers.length > 0) {
+      console.log('Prop으로 받은 markers:', markers);
+      setLocalMarkers([...markers]); // props로 전달된 markers를 로컬 상태로 설정
+      markerOrder.current = markers.length + 1; // 마커 순서를 유지
+    } else {
+      console.log('마커 없음, 초기화');
+      setLocalMarkers([]); // 마커가 없을 경우 상태 초기화
+    }
   }, [markers]);
+
+  useEffect(() => {
+    if (mapRef.current && localMarkers.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      localMarkers.forEach((marker) => bounds.extend({ lat: marker.lat, lng: marker.lng }));
+      mapRef.current.fitBounds(bounds);
+    }
+  }, [localMarkers]);  // 마커가 변경될 때 지도의 범위를 맞춤
 
   // 장소 검색 후 선택된 장소에 마커 추가하는 함수
   const onPlaceChanged = () => {
@@ -158,6 +172,7 @@ const Map = ({ onAddLocation, markers = [] }) => {
         />
       </Autocomplete>
 
+      {/* GoogleMap 컴포넌트에 key 추가 */}
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -169,12 +184,15 @@ const Map = ({ onAddLocation, markers = [] }) => {
           <Marker
             key={index}
             position={{ lat: marker.lat, lng: marker.lng }}
-            onClick={() => setSelectedMarker({ lat: marker.lat, lng: marker.lng })} // 마커 클릭 시 InfoWindow에 마커 정보 표시
+            onClick={() => {
+              setSelectedMarker({ lat: marker.lat, lng: marker.lng });
+              onMarkerClick && onMarkerClick(marker); // 마커 클릭 시 외부에서 제공된 함수 호출
+            }}
           />
         ))}
 
-        {/* 마커들을 순서대로 연결하는 Polyline */}
-        {localMarkers.length > 1 && (
+         {/* 마커들을 순서대로 연결하는 Polyline */}
+         {localMarkers.length > 1 && (
           <Polyline
             path={localMarkers.map((marker) => ({ lat: marker.lat, lng: marker.lng }))} // 마커들의 위치를 순서대로 연결
             options={{
@@ -209,7 +227,7 @@ const Map = ({ onAddLocation, markers = [] }) => {
         )}
       </GoogleMap>
 
-      {/* 타임라인 UI */}
+       {/* 타임라인 UI */}
       <div style={{ marginTop: '20px', padding: '10px' }}>
         <h3>경로 타임라인</h3>
         <DndProvider backend={HTML5Backend}>
@@ -227,6 +245,7 @@ const Map = ({ onAddLocation, markers = [] }) => {
 Map.propTypes = {
   onAddLocation: PropTypes.func.isRequired,
   markers: PropTypes.array.isRequired, // 추가된 props
+  onMarkerClick: PropTypes.func, // onMarkerClick prop 추가
 };
 
 export default Map;
