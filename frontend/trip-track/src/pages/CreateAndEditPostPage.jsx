@@ -13,6 +13,8 @@ const CreateAndEditPostPage = () => {
   const [selectedDate, setSelectedDate] = useState(null); // 현재 선택된 날짜
   const [selectedMarker, setSelectedMarker] = useState(null); // 현재 선택된 마커
   const [mapsData, setMapsData] = useRecoilState(mapsDataState); // Recoil 상태로 관리
+  const [content, setContent] = useState({ text: '', image: null }); // 콘텐츠 상태 추가
+
    // 마커 상태 추가
    const [markers, setMarkers] = useState([]); // 현재 날짜에 해당하는 마커 상태
 
@@ -69,7 +71,7 @@ const CreateAndEditPostPage = () => {
     setMapsData((prevMapsData) => {
       const updatedData = {
         ...prevMapsData,
-        [date]: [...(prevMapsData[date] || []), { ...newLocation, content: '' }], // 기존 마커에 새 마커 추가
+        [date]: [...(prevMapsData[date] || []), { ...newLocation, content: { text: '', image: null } }], // 기존 마커에 새 마커 추가
       };
       console.log('업데이트된 mapsData:', updatedData); // 업데이트된 상태 확인
       return updatedData;
@@ -79,15 +81,16 @@ const CreateAndEditPostPage = () => {
    // 마커 클릭 시 호출되는 함수
    const handleMarkerClick = (marker) => {
     setSelectedMarker(marker); // 선택된 마커를 상태로 저장
+    setContent(marker.content || { text: '', image: null }); // 선택한 마커의 콘텐츠 로드
   }
 
-    // 콘텐츠 저장 처리 함수
-  const handleSaveContent = (content) => {
+   // 콘텐츠 저장 처리 함수
+  const handleSaveContent = (newContent) => {
     if (!selectedMarker) return;
 
     setMapsData((prevMapsData) => {
       const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
-        marker.info === selectedMarker.info ? { ...marker, content } : marker
+        marker.info === selectedMarker.info ? { ...marker, content: newContent } : marker
       );
 
       return {
@@ -96,7 +99,7 @@ const CreateAndEditPostPage = () => {
       };
     });
 
-    console.log('콘텐츠 저장 완료:', content);
+    console.log('콘텐츠 저장 완료:', newContent);
   };
 
   return (
@@ -148,25 +151,21 @@ const CreateAndEditPostPage = () => {
         </div>
       )}
 
-{selectedDate && (
-        // Flexbox를 사용하여 지도와 콘텐츠를 가로로 나란히 배치
+      {selectedDate && (
         <div style={{ display: 'flex', marginTop: '20px' }}>
-          {/* 지도를 좌측에 배치 */}
           <div style={{ flex: 1, marginRight: '20px' }}>
             <h3>{selectedDate}</h3>
             <Map
-              key={selectedDate}
               onAddLocation={(newLocation) => handleAddLocation(selectedDate, newLocation)}
               markers={markers} // 현재 날짜에 맞는 마커를 넘겨줌
-              selectedDate={selectedDate}  // selectedDate 전달
+              selectedDate={selectedDate}
               onMarkerClick={handleMarkerClick} // 마커 클릭 시 호출
             />
           </div>
 
-          {/* 콘텐츠를 우측에 배치 */}
           {selectedMarker && (
-            <div style={{ flexBasis: '300px' }}> {/* 콘텐츠를 고정된 폭으로 설정 */}
-              <Contents selectedMarker={selectedMarker} onSaveContent={handleSaveContent} />
+            <div style={{ flexBasis: '300px' }}>
+              <Contents selectedMarker={selectedMarker} content={content} onSaveContent={handleSaveContent} />
             </div>
           )}
         </div>

@@ -62,7 +62,7 @@ DraggableMarker.propTypes = {
   moveMarker: PropTypes.func.isRequired,  // moveMarker는 함수형 필수값
 };
 
-const Map = ({ onAddLocation, markers = [], selectedDate, onMarkerClick }) => {
+const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
   const [localMarkers, setLocalMarkers] = useState([]); // 전달된 마커를 로컬 상태로 관리
   const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태
   const mapRef = useRef(null);
@@ -79,13 +79,13 @@ const Map = ({ onAddLocation, markers = [], selectedDate, onMarkerClick }) => {
       console.log('마커 없음, 초기화');
       setLocalMarkers([]); // 마커가 없을 경우 상태 초기화
     }
-  }, [markers, selectedDate]);
+  }, [markers]);
 
    // 이곳에 추가
    useEffect(() => {
     console.log('Map 컴포넌트로 전달된 markers:', markers); // markers prop 확인
   }, [markers]);
-  
+
   useEffect(() => {
     if (mapRef.current && localMarkers.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
@@ -179,7 +179,6 @@ const Map = ({ onAddLocation, markers = [], selectedDate, onMarkerClick }) => {
 
       {/* GoogleMap 컴포넌트에 key 추가 */}
       <GoogleMap
-        key={selectedDate}  // selectedDate 변경 시 마다 지도를 리렌더링
         mapContainerStyle={containerStyle}
         center={center}
         zoom={10}
@@ -210,25 +209,33 @@ const Map = ({ onAddLocation, markers = [], selectedDate, onMarkerClick }) => {
         )}
 
         {/* 선택된 마커에 대한 InfoWindow */}
-        {selectedMarker && (
-          <InfoWindow
-            position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
-            onCloseClick={() => setSelectedMarker(null)} // 창 닫기
+{selectedMarker && (
+  <InfoWindow
+    position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
+    onCloseClick={() => setSelectedMarker(null)}
+  >
+    <div style={{ minWidth: '200px', fontSize: '14px' }}>
+      <h4>방문 기록</h4>
+      {/* 동일한 위치의 마커들을 순서대로 표시 */}
+      {getMarkersAtSamePosition(selectedMarker.lat, selectedMarker.lng).map((marker, idx) => (
+        <div 
+          key={idx} 
+          style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px', cursor: 'pointer' }}
+          onClick={() => onMarkerClick(marker)}  // 클릭 시 해당 마커의 콘텐츠 로드
+        >
+          <p>
+            <strong>방문 순서: {marker.order}</strong>
+          </p>
+          <p>{marker.info}</p>
+          <button
+            style={{ backgroundColor: 'red', color: 'white', border: 'none', cursor: 'pointer' }}
+            onClick={() => deleteMarker(localMarkers.indexOf(marker))}
           >
-            <div style={{ minWidth: '120px', fontSize: '14px' }}>
-              {/* 동일한 위치의 마커들을 순서대로 표시 */}
-              {getMarkersAtSamePosition(selectedMarker.lat, selectedMarker.lng).map((marker, idx) => (
-                <div key={idx} style={{ marginBottom: '10px' }}>
-                  <p>{`${marker.order}. ${marker.info}`}</p> {/* 장소명과 순서를 표시 */}
-                  <button
-                    style={{ backgroundColor: 'red', color: 'white', border: 'none', cursor: 'pointer' }}
-                    onClick={() => deleteMarker(localMarkers.indexOf(marker))} // 마커 삭제 버튼
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
-            </div>
+            X
+          </button>
+        </div>
+      ))}
+    </div>
           </InfoWindow>
         )}
       </GoogleMap>
