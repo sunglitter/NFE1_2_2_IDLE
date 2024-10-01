@@ -62,7 +62,7 @@ DraggableMarker.propTypes = {
   moveMarker: PropTypes.func.isRequired,  // moveMarker는 함수형 필수값
 };
 
-const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
+const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) => {
   const [localMarkers, setLocalMarkers] = useState([]); // 전달된 마커를 로컬 상태로 관리
   const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태
   const mapRef = useRef(null);
@@ -139,6 +139,10 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
     // 마커 삭제 후 순서 재정렬
     setLocalMarkers((prevMarkers) => {
       const updatedMarkers = prevMarkers.filter((_, index) => index !== markerIndex);
+      
+      // markers 갱신 로직 추가 (Recoil 상태 갱신)
+      onUpdateMarkers(updatedMarkers);
+
       return updatedMarkers.map((marker, index) => ({
         ...marker,
         order: index + 1, // 순서를 다시 설정
@@ -269,6 +273,7 @@ Map.propTypes = {
   markers: PropTypes.array.isRequired, // 추가된 props
   selectedDate: PropTypes.string.isRequired,  // selectedDate는 필수 prop으로 받음
   onMarkerClick: PropTypes.func, // onMarkerClick prop 추가
+  onUpdateMarkers: PropTypes.func.isRequired,
 };
 
 export default Map;

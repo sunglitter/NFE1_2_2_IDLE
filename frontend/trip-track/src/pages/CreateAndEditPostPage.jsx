@@ -78,6 +78,19 @@ const CreateAndEditPostPage = () => {
     });
   };
 
+   // 마커가 업데이트되었을 때 호출되는 함수
+   const handleUpdateMarkers = (updatedMarkers) => {
+    setMapsData((prevMapsData) => {
+      // 선택된 날짜의 마커를 갱신
+      const updatedData = {
+        ...prevMapsData,
+        [selectedDate]: updatedMarkers,
+      };
+      
+      return updatedData;
+    });
+  };
+
    // 마커 클릭 시 호출되는 함수
    const handleMarkerClick = (marker) => {
     setSelectedMarker(marker); // 선택된 마커를 상태로 저장
@@ -160,6 +173,7 @@ const CreateAndEditPostPage = () => {
               markers={markers} // 현재 날짜에 맞는 마커를 넘겨줌
               selectedDate={selectedDate}
               onMarkerClick={handleMarkerClick} // 마커 클릭 시 호출
+              onUpdateMarkers={handleUpdateMarkers} // 마커 갱신 함수 전달
             />
           </div>
 
