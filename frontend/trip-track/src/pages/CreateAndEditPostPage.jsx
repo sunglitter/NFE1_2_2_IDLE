@@ -142,15 +142,33 @@ const CreateAndEditPostPage = () => {
         Done
       </button>
 
+      <style>
+        {`
+        .parent-container {
+          width: 100%;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+        .date-button {
+      width: calc(20% - 10px); /* 5개 버튼이 표시되도록 각 버튼 크기 설정 */
+      margin: 0 5px;
+      display: inline-block;
+    }
+          .date-button:focus {
+  outline: none; /* 포커스시 외곽선 제거 */
+  box-shadow: none; /* 포커스시 그림자 제거 */
+}
+        `}
+      </style>
       {dateRange.length > 0 && (
-        <div style={{ display: 'flex', marginTop: '20px', overflowX: 'auto' }}>
+        <div className="parent-container">
           {dateRange.map((date) => (
             <button
               key={date}
               onClick={() => setSelectedDate(date)}
+              className="date-button"
               style={{
                 padding: '10px',
-                margin: '0 5px',
                 backgroundColor: selectedDate === date ? 'black' : 'lightgrey',
                 color: selectedDate === date ? 'white' : 'black',
                 border: 'none',
