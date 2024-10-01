@@ -204,6 +204,15 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick }) => {
               strokeColor: '#FF0000', // 선 색상
               strokeOpacity: 1.0, // 선 투명도
               strokeWeight: 2, // 선 굵기
+              icons: [
+                {
+                  icon: {
+                    path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW, // 화살표 아이콘
+                  },
+                  offset: '100%', // 화살표가 선 끝에 위치
+                  repeat: '100px', // 100px마다 화살표 반복
+                },
+              ],
             }}
           />
         )}
