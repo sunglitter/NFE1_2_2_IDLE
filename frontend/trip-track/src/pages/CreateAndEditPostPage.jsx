@@ -14,7 +14,7 @@ const CreateAndEditPostPage = () => {
   const [selectedDate, setSelectedDate] = useState(null); // 현재 선택된 날짜
   const [selectedMarker, setSelectedMarker] = useState(null); // 현재 선택된 마커
   const [mapsData, setMapsData] = useRecoilState(mapsDataState); // Recoil 상태로 관리
-  const [content, setContent] = useState({ text: '', image: null }); // 콘텐츠 상태 추가
+  const [content, setContent] = useState({ text: '', images: [], thumbnailIndex: null }); // 콘텐츠 상태 추가
   const [selectedOptions, setSelectedOptions] = useState([]); // 선택된 세부 항목 상태
   const [isOptionsOpen, setIsOptionsOpen] = useState(false); // 옵션 선택 항목 열고 닫기 상태
    // 마커 상태 추가
@@ -39,6 +39,8 @@ const CreateAndEditPostPage = () => {
     // 선택된 날짜에 해당하는 마커를 불러와서 상태로 설정
     if (selectedDate && mapsData[selectedDate]) {
       setMarkers(mapsData[selectedDate]); // 해당 날짜에 해당하는 마커를 로컬 상태로 저장
+      setSelectedMarker(null); // 날짜가 변경될 때 선택된 마커 초기화
+      setContent({ text: '', images: [], thumbnailIndex: null }); // 콘텐츠 초기화
     } else {
       setMarkers([]); // 선택된 날짜에 마커가 없으면 빈 배열로 설정
     }
@@ -103,7 +105,7 @@ const CreateAndEditPostPage = () => {
    // 마커 클릭 시 호출되는 함수
    const handleMarkerClick = (marker) => {
     setSelectedMarker(marker); // 선택된 마커를 상태로 저장
-    setContent(marker.content || { text: '', image: null }); // 선택한 마커의 콘텐츠 로드
+    setContent(marker.content || { text: '', images: [], thumbnailIndex: null }); // 선택한 마커의 콘텐츠 로드
   }
 
    // 콘텐츠 저장 처리 함수
