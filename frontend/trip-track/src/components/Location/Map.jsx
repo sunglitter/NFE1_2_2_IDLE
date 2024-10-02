@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { GoogleMap, LoadScript, Autocomplete, Marker, InfoWindow, Polyline } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Autocomplete, Marker, InfoWindow } from '@react-google-maps/api';
 import PropTypes from 'prop-types';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -94,6 +94,43 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
     }
   }, [localMarkers]);  // 마커가 변경될 때 지도의 범위를 맞춤
 
+  // Polyline 관리 (마커가 변경될 때마다 자동으로 업데이트)
+  const updatePolyline = () => {
+    if (mapRef.current && localMarkers.length > 1) {
+      const path = localMarkers.map((marker) => ({ lat: marker.lat, lng: marker.lng }));
+
+      const newPolyline = new window.google.maps.Polyline({
+        path,
+        map: mapRef.current,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        icons: [
+          {
+            icon: {
+              path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW, // 화살표 아이콘
+            },
+            offset: '100%', // 화살표가 선 끝에 위치
+            repeat: '100px', // 100px마다 화살표 반복
+          },
+        ],
+      });
+
+      return newPolyline;
+    }
+  };
+
+  // useEffect를 사용해 마커가 변경될 때마다 Polyline을 업데이트
+  useEffect(() => {
+    const polyline = updatePolyline(); // 새로운 Polyline 그리기
+
+    // 컴포넌트 언마운트 또는 마커가 변경될 때 기존 Polyline 제거
+    return () => {
+      if (polyline) {
+        polyline.setMap(null); // 기존 Polyline 제거
+      }
+    };
+  }, [localMarkers]);
   // 장소 검색 후 선택된 장소에 마커 추가하는 함수
   const onPlaceChanged = () => {
     if (autocomplete) {
@@ -199,27 +236,6 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
             }}
           />
         ))}
-
-         {/* 마커들을 순서대로 연결하는 Polyline */}
-         {localMarkers.length > 1 && (
-          <Polyline
-            path={localMarkers.map((marker) => ({ lat: marker.lat, lng: marker.lng }))} // 마커들의 위치를 순서대로 연결
-            options={{
-              strokeColor: '#FF0000', // 선 색상
-              strokeOpacity: 1.0, // 선 투명도
-              strokeWeight: 2, // 선 굵기
-              icons: [
-                {
-                  icon: {
-                    path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW, // 화살표 아이콘
-                  },
-                  offset: '100%', // 화살표가 선 끝에 위치
-                  repeat: '100px', // 100px마다 화살표 반복
-                },
-              ],
-            }}
-          />
-        )}
 
         {/* 선택된 마커에 대한 InfoWindow */}
 {selectedMarker && (

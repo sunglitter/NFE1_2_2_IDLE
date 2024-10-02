@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { RecoilRoot } from 'recoil'; // RecoilRoot import
-import CreateAndEditPostPage from './pages/CreateAndEditPostPage';
+import CreateAndEditPostPage from './pages/CreateAndEditPostPage.jsx';
 
 const App = () => {
   return (
