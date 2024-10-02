@@ -5,6 +5,7 @@ import Map from '../components/Location/Map.jsx';
 import Contents from '../components/Location/Contents.jsx';
 import { useRecoilState } from 'recoil';
 import { mapsDataState } from '../recoil/mapsState.js'; // Recoil 상태 가져오기
+import { FaUndo } from 'react-icons/fa'; // 초기화 아이콘 (react-icons 사용)
 
 const CreateAndEditPostPage = () => {
   const [startDate, setStartDate] = useState(null); // 시작 날짜 상태
@@ -14,9 +15,17 @@ const CreateAndEditPostPage = () => {
   const [selectedMarker, setSelectedMarker] = useState(null); // 현재 선택된 마커
   const [mapsData, setMapsData] = useRecoilState(mapsDataState); // Recoil 상태로 관리
   const [content, setContent] = useState({ text: '', image: null }); // 콘텐츠 상태 추가
-
+  const [selectedOptions, setSelectedOptions] = useState([]); // 선택된 세부 항목 상태
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false); // 옵션 선택 항목 열고 닫기 상태
    // 마커 상태 추가
    const [markers, setMarkers] = useState([]); // 현재 날짜에 해당하는 마커 상태
+
+     // 카테고리 및 세부 선택 항목 설정
+  const categories = {
+    '목적': ['휴식', '레저', '비즈니스', '학습'],
+    '인원': ['혼자', '연인', '가족'],
+    '계절': ['봄', '여름', '가을', '겨울'],
+  };
 
   useEffect(() => {
     // Recoil 상태를 콘솔로 확인하여 문제 디버깅
@@ -115,32 +124,126 @@ const CreateAndEditPostPage = () => {
     console.log('콘텐츠 저장 완료:', newContent);
   };
 
+   // 여행 요소 버튼을 눌렀을 때 항목 열고 닫기
+   const toggleOptions = () => {
+    setIsOptionsOpen((prev) => !prev); // 옵션 열고 닫기 상태 토글
+  };
+
+
+  // 세부 항목 클릭 시 선택/해제 처리
+  const handleOptionClick = (option) => {
+    if (selectedOptions.includes(option)) {
+      // 이미 선택된 항목이면 해제
+      setSelectedOptions(selectedOptions.filter((item) => item !== option));
+    } else {
+      // 선택되지 않은 항목이면 추가
+      setSelectedOptions([...selectedOptions, option]);
+    }
+  };
+
+  // 모든 선택을 초기화하는 함수
+  const handleResetClick = () => {
+    setSelectedOptions([]); // 선택된 항목 초기화
+  };
+
+
   return (
     <div>
       <h2>Create or Edit Post</h2>
 
-      <DatePicker
-        selected={startDate}
-        onChange={(date) => setStartDate(date)}
-        selectsStart
-        startDate={startDate}
-        endDate={endDate}
-        dateFormat="yyyy-MM-dd"
-        placeholderText="여행 시작일"
-      />
-      <DatePicker
-        selected={endDate}
-        onChange={(date) => setEndDate(date)}
-        selectsEnd
-        startDate={startDate}
-        endDate={endDate}
-        dateFormat="yyyy-MM-dd"
-        placeholderText="여행 종료일"
-      />
+      {/* 날짜 선택과 Done 버튼, 그리고 옵션 열기 버튼을 가로로 배치 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          dateFormat="yyyy-MM-dd"
+          placeholderText="여행 시작일"
+        />
+        <DatePicker
+          selected={endDate}
+          onChange={(date) => setEndDate(date)}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          dateFormat="yyyy-MM-dd"
+          placeholderText="여행 종료일"
+        />
+        <button onClick={handleDoneClick} style={{ padding: '5px 10px' }}>
+          Done
+        </button>
+        {/* 여행 요소 버튼 */}
+        <button onClick={toggleOptions} style={{ padding: '5px 10px' }}>
+          여행 요소
+        </button>
+      </div>
 
-      <button onClick={handleDoneClick} style={{ marginTop: '10px', padding: '5px' }}>
-        Done
-      </button>
+ {/* 옵션 선택 항목 토글 */}
+ {isOptionsOpen && (
+        <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '5px' }}>
+          <h4>옵션 항목들</h4>
+          {/* 카테고리 목록 세로 배치 */}
+          {Object.keys(categories).map((category) => (
+            <div key={category} style={{ marginBottom: '10px' }}>
+              <h5>{category}</h5>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                {categories[category].map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => handleOptionClick(option)}
+                    style={{
+                      padding: '5px 10px',
+                      backgroundColor: selectedOptions.includes(option) ? 'black' : 'lightgrey',
+                      color: selectedOptions.includes(option) ? 'white' : 'black',
+                      border: 'none',
+                      borderRadius: '5px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 선택된 항목들 표시 및 개별 삭제 */}
+      {selectedOptions.length > 0 && (
+        <div style={{ marginBottom: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {selectedOptions.map((option) => (
+              <div
+                key={option}
+                style={{
+                  padding: '10px',
+                  backgroundColor: 'black',
+                  color: 'white',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+                onClick={() => handleOptionClick(option)} // 선택 항목 클릭 시 해제
+              >
+                {option}
+                <span style={{ marginLeft: '5px', cursor: 'pointer' }}>✕</span>
+              </div>
+            ))}
+          </div>
+          {/* 초기화 아이콘 버튼 */}
+          <button onClick={handleResetClick} style={{ padding: '5px 10px', backgroundColor: 'transparent', border: 'none' }}>
+            <FaUndo size={24} color="black" />
+          </button>
+          {/* 적용 버튼 */}
+          <button style={{ marginTop: '10px', padding: '10px 20px', backgroundColor: '#d3d3d3', border: 'none', borderRadius: '5px' }}>
+            적용
+          </button>
+        </div>
+      )}
 
       <style>
         {`
