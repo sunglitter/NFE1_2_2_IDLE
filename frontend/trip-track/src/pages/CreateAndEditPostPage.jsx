@@ -183,7 +183,6 @@ const CreateAndEditPostPage = () => {
  {/* 옵션 선택 항목 토글 */}
  {isOptionsOpen && (
         <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '5px' }}>
-          <h4>옵션 항목들</h4>
           {/* 카테고리 목록 세로 배치 */}
           {Object.keys(categories).map((category) => (
             <div key={category} style={{ marginBottom: '10px' }}>
