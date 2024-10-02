@@ -11,11 +11,11 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
   console.log('Contents에 전달된 selectedMarker:', selectedMarker);
   console.log('Contents에 전달된 content:', content)
 
-   // 마커가 변경될 때마다 content.text를 text 상태로 업데이트
-   useEffect(() => {
-    if (content && content.text !== undefined) {
-      setText(content.text); // content.text가 변경되면 text 상태를 업데이트
-    }
+  // 마커가 변경될 때마다 이미지와 텍스트 상태를 초기화
+  useEffect(() => {
+    setText(content.text || ''); // 텍스트 초기화
+    setImages(content.images || []); // 이미지 상태 초기화
+    setThumbnailIndex(content.thumbnailIndex || null); // 썸네일 상태 초기화
   }, [content]);
 
   // 이미지 업로드 처리 함수
@@ -27,14 +27,13 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
 
   // 이미지 삭제 처리 함수
   const handleImageDelete = (index) => {
-    const updatedImages = images.filter((_, i) => i !== index); // 해당 인덱스의 이미지를 삭제
-
-    // 썸네일로 지정된 이미지가 삭제되면 썸네일 상태 초기화
+    const updatedImages = images.filter((_, i) => i !== index); // 선택한 이미지 삭제
+    setImages(updatedImages);
     if (thumbnailIndex === index) {
-      setThumbnailIndex(null);
+      setThumbnailIndex(null); // 썸네일로 설정된 이미지가 삭제될 경우 초기화
+    } else if (thumbnailIndex > index) {
+      setThumbnailIndex(thumbnailIndex - 1); // 삭제된 이미지 이후의 썸네일 인덱스를 업데이트
     }
-
-    setImages(updatedImages); // 상태 업데이트
   };
 
   // 썸네일 이미지 지정 함수
