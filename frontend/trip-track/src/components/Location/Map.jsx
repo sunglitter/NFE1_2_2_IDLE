@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { GoogleMap, LoadScript, Autocomplete, Marker, InfoWindow } from '@react-google-maps/api';
-import PropTypes from 'prop-types';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { GoogleMap, LoadScript, Autocomplete, Marker, InfoWindow } from '@react-google-maps/api'; // 구글 맵 관련 컴포넌트
+import PropTypes from 'prop-types'; // PropTypes로 props 검증
+import { DndProvider, useDrag, useDrop } from 'react-dnd'; // 드래그 앤 드롭 라이브러리
+import { HTML5Backend } from 'react-dnd-html5-backend'; // 드래그 앤 드롭 백엔드
 
-// 마커를 드래그 앤 드롭할 때 사용할 아이템 타입
+// 마커 드래그 앤 드롭 타입 정의
 const ItemType = 'MARKER';
 
-// 지도 컨테이너 스타일
+// 지도 컨테이너 스타일 정의
 const containerStyle = {
   width: '100%',
   height: '400px',
@@ -19,14 +19,14 @@ const center = {
   lng: -122.4194,
 };
 
-// 라이브러리 목록
+// 구글 맵 라이브러리 목록
 const libraries = ['places', 'marker'];
 
-// 드래그 가능한 마커 컴포넌트
+// 드래그 가능한 마커 컴포넌트 정의
 const DraggableMarker = ({ marker, index, moveMarker }) => {
   const [, ref] = useDrag({
     type: ItemType,
-    item: { index },
+    item: { index }, // 마커의 인덱스 정보
   });
 
   const [, drop] = useDrop({
@@ -42,59 +42,53 @@ const DraggableMarker = ({ marker, index, moveMarker }) => {
   return (
     <div ref={(node) => ref(drop(node))} style={{ margin: '0 10px', textAlign: 'center', cursor: 'move' }}>
       <div>
-        {/* 동그라미 아이콘 */}
         <span style={{ fontSize: '24px', cursor: 'grab' }}>⚪</span> {/* 드래그 가능한 아이콘 */}
-        <strong>{marker.order}. {marker.info}</strong> {/* 마커 순서와 정보를 표시 */}
+        <strong>{marker.order}. {marker.info}</strong> {/* 마커의 순서와 정보를 표시 */}
       </div>
     </div>
   );
 };
 
-// PropTypes 추가
+// PropTypes로 마커 속성 검증
 DraggableMarker.propTypes = {
   marker: PropTypes.shape({
-    order: PropTypes.number.isRequired, // marker의 order는 숫자형 필수값
-    info: PropTypes.string.isRequired,  // marker의 info는 문자열 필수값
-    lat: PropTypes.number.isRequired,   // marker의 위도는 숫자형 필수값
-    lng: PropTypes.number.isRequired,   // marker의 경도는 숫자형 필수값
+    order: PropTypes.number.isRequired, // 마커의 순서는 숫자형 필수값
+    info: PropTypes.string.isRequired,  // 마커의 정보는 문자열 필수값
+    lat: PropTypes.number.isRequired,   // 마커의 위도는 숫자형 필수값
+    lng: PropTypes.number.isRequired,   // 마커의 경도는 숫자형 필수값
   }).isRequired,
-  index: PropTypes.number.isRequired,     // index는 숫자형 필수값
-  moveMarker: PropTypes.func.isRequired,  // moveMarker는 함수형 필수값
+  index: PropTypes.number.isRequired,     // 마커의 인덱스는 숫자형 필수값
+  moveMarker: PropTypes.func.isRequired,  // 마커 이동 함수는 함수형 필수값
 };
 
+// 지도 컴포넌트 정의
 const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) => {
   const [localMarkers, setLocalMarkers] = useState([]); // 전달된 마커를 로컬 상태로 관리
   const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태
-  const mapRef = useRef(null);
+  const mapRef = useRef(null); // 지도 객체를 저장할 참조
   const [autocomplete, setAutocomplete] = useState(null); // Autocomplete 상태
-  const markerOrder = useRef(1); // 마커 순서를 추적하는 변수 (Ref로 관리)
+  const markerOrder = useRef(1); // 마커 순서를 추적하는 변수
 
-  // 전달된 markers가 변경될 때마다 localMarkers에 설정
+  // 전달된 마커가 변경될 때마다 로컬 상태에 반영
   useEffect(() => {
     if (markers && markers.length > 0) {
-      console.log('Prop으로 받은 markers:', markers);
-      setLocalMarkers([...markers]); // props로 전달된 markers를 로컬 상태로 설정
-      markerOrder.current = markers.length + 1; // 마커 순서를 유지
+      setLocalMarkers([...markers]); // 전달된 마커를 로컬 상태로 설정
+      markerOrder.current = markers.length + 1; // 마커 순서 업데이트
     } else {
-      console.log('마커 없음, 초기화');
       setLocalMarkers([]); // 마커가 없을 경우 상태 초기화
     }
   }, [markers]);
 
-   // 이곳에 추가
-   useEffect(() => {
-    console.log('Map 컴포넌트로 전달된 markers:', markers); // markers prop 확인
-  }, [markers]);
-
+  // 마커가 추가/변경될 때마다 지도 범위를 조정
   useEffect(() => {
     if (mapRef.current && localMarkers.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
       localMarkers.forEach((marker) => bounds.extend({ lat: marker.lat, lng: marker.lng }));
       mapRef.current.fitBounds(bounds);
     }
-  }, [localMarkers]);  // 마커가 변경될 때 지도의 범위를 맞춤
+  }, [localMarkers]);
 
-  // Polyline 관리 (마커가 변경될 때마다 자동으로 업데이트)
+  // 마커 사이를 연결하는 경로(Polyline)를 업데이트하는 함수
   const updatePolyline = () => {
     if (mapRef.current && localMarkers.length > 1) {
       const path = localMarkers.map((marker) => ({ lat: marker.lat, lng: marker.lng }));
@@ -120,17 +114,18 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
     }
   };
 
-  // useEffect를 사용해 마커가 변경될 때마다 Polyline을 업데이트
+  // 마커 변경 시 경로(Polyline)를 다시 그리기
   useEffect(() => {
     const polyline = updatePolyline(); // 새로운 Polyline 그리기
 
-    // 컴포넌트 언마운트 또는 마커가 변경될 때 기존 Polyline 제거
+    // 컴포넌트가 언마운트되거나 마커가 변경될 때 기존 Polyline 제거
     return () => {
       if (polyline) {
         polyline.setMap(null); // 기존 Polyline 제거
       }
     };
   }, [localMarkers]);
+
   // 장소 검색 후 선택된 장소에 마커 추가하는 함수
   const onPlaceChanged = () => {
     if (autocomplete) {
@@ -139,12 +134,12 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
         const location = {
           lat: place.geometry.location.lat(),
           lng: place.geometry.location.lng(),
-          info: place.name || `검색된 장소명`, // 장소명 추가
-          order: markerOrder.current, // 마커 생성 순서
+          info: place.name || `검색된 장소명`, // 장소명
+          order: markerOrder.current, // 마커 순서
         };
         markerOrder.current += 1; // 마커 순서 증가
 
-        // 마커 추가 시 항상 순서를 다시 설정
+        // 마커 추가 시 순서 재설정
         setLocalMarkers((prevMarkers) => {
           const updatedMarkers = [...prevMarkers, location];
           return updatedMarkers.map((marker, index) => ({
@@ -158,7 +153,7 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
           mapRef.current.panTo(location);
         }
 
-        // 외부로부터 전달된 마커 추가 함수 호출
+        // 외부에서 전달된 마커 추가 함수 호출
         onAddLocation(location);
       } else {
         console.warn('선택된 장소에 대한 위치 정보가 없습니다.');
@@ -166,9 +161,9 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
     }
   };
 
-  // Autocomplete 인스턴스가 로드될 때 호출되는 함수
+  // Autocomplete 인스턴스가 로드될 때 호출
   const onLoad = (autocompleteInstance) => {
-    setAutocomplete(autocompleteInstance); // 로드된 인스턴스를 상태에 저장
+    setAutocomplete(autocompleteInstance); // Autocomplete 인스턴스 저장
   };
 
   // 마커 삭제 함수
@@ -177,33 +172,33 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
     setLocalMarkers((prevMarkers) => {
       const updatedMarkers = prevMarkers.filter((_, index) => index !== markerIndex);
       
-      // markers 갱신 로직 추가 (Recoil 상태 갱신)
+      // Recoil 상태 갱신
       onUpdateMarkers(updatedMarkers);
 
       return updatedMarkers.map((marker, index) => ({
         ...marker,
-        order: index + 1, // 순서를 다시 설정
+        order: index + 1, // 마커 순서 재설정
       }));
     });
-    setSelectedMarker(null); // InfoWindow를 닫기 위해 selectedMarker 초기화
+    setSelectedMarker(null); // InfoWindow 닫기 위해 선택된 마커 초기화
   };
 
   // 마커 순서 변경 함수
   const moveMarker = (fromIndex, toIndex) => {
     const updatedMarkers = [...localMarkers];
     const [movedMarker] = updatedMarkers.splice(fromIndex, 1); // 드래그된 마커를 배열에서 제거
-    updatedMarkers.splice(toIndex, 0, movedMarker); // 새 위치에 삽입
+    updatedMarkers.splice(toIndex, 0, movedMarker); // 새로운 위치에 삽입
 
-    // 마커 순서를 다시 설정
+    // 마커 순서 재설정
     setLocalMarkers(
       updatedMarkers.map((marker, index) => ({
         ...marker,
-        order: index + 1,
+        order: index + 1, // 순서 업데이트
       }))
     );
   };
 
-  // 동일한 장소에 대한 중복 마커를 관리하는 함수
+  // 동일한 위치에 있는 마커들을 관리하는 함수
   const getMarkersAtSamePosition = (lat, lng) => {
     return localMarkers.filter((marker) => marker.lat === lat && marker.lng === lng);
   };
@@ -218,58 +213,58 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
         />
       </Autocomplete>
 
-      {/* GoogleMap 컴포넌트에 key 추가 */}
+      {/* GoogleMap 컴포넌트 */}
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
         zoom={10}
-        onLoad={(map) => (mapRef.current = map)} // 지도 로드 시 mapRef에 지도 객체 저장
+        onLoad={(map) => (mapRef.current = map)} // 지도 로드 시 mapRef에 저장
       >
-        {/* 마커들 렌더링 */}
+        {/* 마커 렌더링 */}
         {localMarkers.map((marker, index) => (
           <Marker
             key={index}
             position={{ lat: marker.lat, lng: marker.lng }}
             onClick={() => {
               setSelectedMarker({ lat: marker.lat, lng: marker.lng });
-              onMarkerClick && onMarkerClick(marker); // 마커 클릭 시 외부에서 제공된 함수 호출
+              onMarkerClick && onMarkerClick(marker); // 마커 클릭 시 외부 함수 호출
             }}
           />
         ))}
 
         {/* 선택된 마커에 대한 InfoWindow */}
-{selectedMarker && (
-  <InfoWindow
-    position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
-    onCloseClick={() => setSelectedMarker(null)}
-  >
-    <div style={{ minWidth: '200px', fontSize: '14px' }}>
-      <h4>방문 기록</h4>
-      {/* 동일한 위치의 마커들을 순서대로 표시 */}
-      {getMarkersAtSamePosition(selectedMarker.lat, selectedMarker.lng).map((marker, idx) => (
-        <div 
-          key={idx} 
-          style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px', cursor: 'pointer' }}
-          onClick={() => onMarkerClick(marker)}  // 클릭 시 해당 마커의 콘텐츠 로드
-        >
-          <p>
-            <strong>방문 순서: {marker.order}</strong>
-          </p>
-          <p>{marker.info}</p>
-          <button
-            style={{ backgroundColor: 'red', color: 'white', border: 'none', cursor: 'pointer' }}
-            onClick={() => deleteMarker(localMarkers.indexOf(marker))}
+        {selectedMarker && (
+          <InfoWindow
+            position={{ lat: selectedMarker.lat, lng: selectedMarker.lng }}
+            onCloseClick={() => setSelectedMarker(null)} // 창 닫기
           >
-            X
-          </button>
-        </div>
-      ))}
-    </div>
+            <div style={{ minWidth: '200px', fontSize: '14px' }}>
+              <h4>방문 기록</h4>
+              {/* 동일한 위치에 있는 마커들 표시 */}
+              {getMarkersAtSamePosition(selectedMarker.lat, selectedMarker.lng).map((marker, idx) => (
+                <div 
+                  key={idx} 
+                  style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px', cursor: 'pointer' }}
+                  onClick={() => onMarkerClick(marker)} // 클릭 시 마커의 콘텐츠 로드
+                >
+                  <p>
+                    <strong>방문 순서: {marker.order}</strong>
+                  </p>
+                  <p>{marker.info}</p>
+                  <button
+                    style={{ backgroundColor: 'red', color: 'white', border: 'none', cursor: 'pointer' }}
+                    onClick={() => deleteMarker(localMarkers.indexOf(marker))} // 마커 삭제
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
           </InfoWindow>
         )}
       </GoogleMap>
 
-       {/* 타임라인 UI */}
+      {/* 타임라인 UI (드래그 앤 드롭으로 마커 순서 변경 가능) */}
       <div style={{ marginTop: '20px', padding: '10px' }}>
         <h3>경로 타임라인</h3>
         <DndProvider backend={HTML5Backend}>
@@ -284,12 +279,13 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
   );
 };
 
+// Map 컴포넌트 PropTypes 검증
 Map.propTypes = {
-  onAddLocation: PropTypes.func.isRequired,
-  markers: PropTypes.array.isRequired, // 추가된 props
-  selectedDate: PropTypes.string.isRequired,  // selectedDate는 필수 prop으로 받음
-  onMarkerClick: PropTypes.func, // onMarkerClick prop 추가
-  onUpdateMarkers: PropTypes.func.isRequired,
+  onAddLocation: PropTypes.func.isRequired, // 장소 추가 함수
+  markers: PropTypes.array.isRequired,      // 마커 배열
+  selectedDate: PropTypes.string.isRequired, // 선택된 날짜
+  onMarkerClick: PropTypes.func,            // 마커 클릭 함수
+  onUpdateMarkers: PropTypes.func.isRequired, // 마커 업데이트 함수
 };
 
 export default Map;

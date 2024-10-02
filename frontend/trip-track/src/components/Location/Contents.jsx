@@ -1,29 +1,40 @@
-import { useState } from 'react';
-import { FaCrown } from 'react-icons/fa'; // 왕관 아이콘을 사용하기 위한 임포트
-import PropTypes from 'prop-types';
+import { useState, useEffect } from 'react';
+import { FaCrown } from 'react-icons/fa'; // 왕관 아이콘 사용
+import PropTypes from 'prop-types'; // PropTypes로 props 검증
 
+// 장소별 콘텐츠 추가 컴포넌트
 const Contents = ({ selectedMarker, content, onSaveContent }) => {
-  const [text, setText] = useState(content?.text || ''); // 텍스트 상태
-  const [images, setImages] = useState(content?.images || []); // 이미지 배열 상태 (최대 10개)
-  const [thumbnailIndex, setThumbnailIndex] = useState(content?.thumbnailIndex || null); // 썸네일로 지정된 이미지 인덱스
+  const [text, setText] = useState(content?.text || ''); // 장소 설명 텍스트 상태
+  const [images, setImages] = useState(content?.images || []); // 이미지 배열 상태
+  const [thumbnailIndex, setThumbnailIndex] = useState(content?.thumbnailIndex || null); // 썸네일로 지정된 이미지 인덱스 상태
 
-  // 이미지 업로드 처리 함수 (최대 10개까지 업로드 가능)
+  console.log('Contents에 전달된 selectedMarker:', selectedMarker);
+  console.log('Contents에 전달된 content:', content)
+
+   // 마커가 변경될 때마다 content.text를 text 상태로 업데이트
+   useEffect(() => {
+    if (content && content.text !== undefined) {
+      setText(content.text); // content.text가 변경되면 text 상태를 업데이트
+    }
+  }, [content]);
+
+  // 이미지 업로드 처리 함수
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     const newImages = files.slice(0, 10 - images.length); // 최대 10개의 이미지만 허용
-    setImages((prevImages) => [...prevImages, ...newImages]);
+    setImages((prevImages) => [...prevImages, ...newImages]); // 새 이미지를 기존 이미지에 추가
   };
 
-   // 이미지 삭제 처리 함수
+  // 이미지 삭제 처리 함수
   const handleImageDelete = (index) => {
-    const updatedImages = images.filter((_, i) => i !== index);
+    const updatedImages = images.filter((_, i) => i !== index); // 해당 인덱스의 이미지를 삭제
 
-    // 삭제된 이미지가 썸네일로 지정되어 있으면 썸네일 상태 초기화
+    // 썸네일로 지정된 이미지가 삭제되면 썸네일 상태 초기화
     if (thumbnailIndex === index) {
       setThumbnailIndex(null);
     }
 
-    setImages(updatedImages);
+    setImages(updatedImages); // 상태 업데이트
   };
 
   // 썸네일 이미지 지정 함수
@@ -31,13 +42,12 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
     setThumbnailIndex(index); // 선택된 이미지를 썸네일로 지정
   };
 
-  // 콘텐츠 저장 처리 함수
+  // 콘텐츠 저장 함수 (텍스트와 이미지 저장)
   const handleSave = () => {
-    // 이미지와 텍스트를 함께 저장
     onSaveContent({
       text,
-      images, // 이미지를 저장하기 위한 필드
-      thumbnailIndex, // 썸네일로 지정된 이미지 인덱스
+      images,
+      thumbnailIndex,
     });
   };
 
@@ -45,8 +55,8 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
     <div style={{ border: '1px solid #ddd', padding: '15px', marginTop: '20px', borderRadius: '10px' }}>
       <h3>{selectedMarker.info} - 장소 정보 추가</h3>
 
-       {/* 이미지 업로드 */}
-       <div style={{ marginTop: '20px' }}>
+      {/* 이미지 업로드 UI */}
+      <div style={{ marginTop: '20px' }}>
         <label htmlFor="image">이미지 업로드 (최대 10개):</label>
         <input
           type="file"
@@ -54,14 +64,14 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
           accept="image/*"
           multiple
           onChange={handleImageUpload}
-          disabled={images.length >= 10} // 이미지가 10개 이상이면 업로드 비활성화
+          disabled={images.length >= 10} // 이미지가 10개 이상이면 비활성화
         />
         {images.length >= 10 && (
           <p style={{ color: 'red', marginTop: '5px' }}>이미지는 최대 10개까지 업로드할 수 있습니다.</p>
         )}
       </div>
 
-      {/* 업로드된 이미지 미리보기 및 삭제 버튼 */}
+      {/* 업로드된 이미지 미리보기 및 삭제 */}
       {images.length > 0 && (
         <div style={{ marginTop: '20px' }}>
           <h4>이미지 미리보기:</h4>
@@ -73,8 +83,8 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
                   alt="미리보기"
                   style={{ width: '100%', maxHeight: '150px', objectFit: 'cover', borderRadius: '5px' }}
                 />
-                 {/* 왕관 아이콘 (썸네일 설정) */}
-                 <button
+                {/* 왕관 아이콘 (썸네일 설정) */}
+                <button
                   onClick={() => handleSetThumbnail(index)}
                   style={{
                     position: 'absolute',
@@ -87,7 +97,7 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
                 >
                   <FaCrown
                     size={24}
-                    color={thumbnailIndex === index ? 'gold' : 'gray'} // 선택된 썸네일은 금색, 나머지는 회색
+                    color={thumbnailIndex === index ? 'gold' : 'gray'} // 썸네일로 설정된 이미지는 금색 아이콘
                   />
                 </button>
                 {/* 삭제 버튼 */}
@@ -118,7 +128,7 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
         </div>
       )}
 
-      {/* 텍스트 입력 */}
+      {/* 장소 설명 입력 */}
       <div>
         <label htmlFor="text">장소 설명:</label>
         <textarea
@@ -145,7 +155,6 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
       >
         저장
       </button>
-
     </div>
   );
 };
@@ -160,7 +169,7 @@ Contents.propTypes = {
       images: PropTypes.arrayOf(PropTypes.any), // 이미지 배열
       thumbnailIndex: PropTypes.number, // 썸네일로 지정된 이미지 인덱스
     }),
-    onSaveContent: PropTypes.func.isRequired, // 저장 함수
-  };
+    onSaveContent: PropTypes.func.isRequired, // 콘텐츠 저장 함수
+};
 
 export default Contents;
