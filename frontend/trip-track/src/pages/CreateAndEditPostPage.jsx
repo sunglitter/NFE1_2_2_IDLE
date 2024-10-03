@@ -46,6 +46,20 @@ const CreateAndEditPostPage = () => {
   }, [selectedDate, selectedMarker, content]);
   
   useEffect(() => {
+    // 선택된 날짜가 변경될 때 마커 순서를 다시 설정
+    if (selectedDate && mapsData[selectedDate]?.length > 0) {
+      const updatedMarkers = mapsData[selectedDate].map((marker, index) => ({
+        ...marker,
+        order: index + 1, // 날짜별 마커 순서를 다시 설정
+      }));
+
+      setMarkers(updatedMarkers); // 마커 상태를 업데이트
+    } else {
+      setMarkers([]); // 마커가 없을 경우 초기화
+    }
+  }, [selectedDate, mapsData]);
+  
+  useEffect(() => {
     // 선택된 날짜가 변경되면 모든 상태 초기화
     if (selectedDate && Array.isArray(mapsData[selectedDate])) {
       setMarkers(mapsData[selectedDate]); // 선택된 날짜에 해당하는 마커들을 로드

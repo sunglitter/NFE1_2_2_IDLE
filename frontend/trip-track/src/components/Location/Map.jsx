@@ -183,20 +183,24 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
     setSelectedMarker(null); // InfoWindow 닫기 위해 선택된 마커 초기화
   };
 
-  // 마커 순서 변경 함수
-  const moveMarker = (fromIndex, toIndex) => {
-    const updatedMarkers = [...localMarkers];
-    const [movedMarker] = updatedMarkers.splice(fromIndex, 1); // 드래그된 마커를 배열에서 제거
-    updatedMarkers.splice(toIndex, 0, movedMarker); // 새로운 위치에 삽입
+ // 마커 순서 변경 함수
+const moveMarker = (fromIndex, toIndex) => {
+  const updatedMarkers = [...localMarkers];
+  const [movedMarker] = updatedMarkers.splice(fromIndex, 1); // 드래그된 마커를 배열에서 제거
+  updatedMarkers.splice(toIndex, 0, movedMarker); // 새로운 위치에 삽입
 
-    // 마커 순서 재설정
-    setLocalMarkers(
-      updatedMarkers.map((marker, index) => ({
-        ...marker,
-        order: index + 1, // 순서 업데이트
-      }))
-    );
-  };
+  // 마커 순서 재설정
+  const reorderedMarkers = updatedMarkers.map((marker, index) => ({
+    ...marker,
+    order: index + 1, // 순서 업데이트
+  }));
+
+  // `mapsData`에 업데이트된 순서 저장
+  onUpdateMarkers(reorderedMarkers); // 이 함수가 `mapsData` 상태를 업데이트함
+
+  // `localMarkers`에도 업데이트된 순서 반영
+  setLocalMarkers(reorderedMarkers);
+};
 
   // 동일한 위치에 있는 마커들을 관리하는 함수
   const getMarkersAtSamePosition = (lat, lng) => {
