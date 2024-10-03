@@ -226,7 +226,7 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
             key={index}
             position={{ lat: marker.lat, lng: marker.lng }}
             onClick={() => {
-              setSelectedMarker({ lat: marker.lat, lng: marker.lng });
+              setSelectedMarker({ lat: marker.lat, lng: marker.lng, order: marker.order });
               onMarkerClick && onMarkerClick(marker); // 마커 클릭 시 외부 함수 호출
             }}
           />
@@ -242,11 +242,14 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
               <h4>방문 기록</h4>
               {/* 동일한 위치에 있는 마커들 표시 */}
               {getMarkersAtSamePosition(selectedMarker.lat, selectedMarker.lng).map((marker, idx) => (
-                <div 
-                  key={idx} 
-                  style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px', cursor: 'pointer' }}
-                  onClick={() => onMarkerClick(marker)} // 클릭 시 마커의 콘텐츠 로드
-                >
+                 <div 
+                 key={idx} 
+                 style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px', cursor: 'pointer' }}
+                 onClick={() => {
+                   console.log(`Clicked marker with order: ${marker.order}`);
+                   onMarkerClick(marker); // 클릭 시 해당 마커의 콘텐츠 로드
+                 }}
+               >
                   <p>
                     <strong>방문 순서: {marker.order}</strong>
                   </p>

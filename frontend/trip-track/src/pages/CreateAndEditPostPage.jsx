@@ -58,20 +58,25 @@ const CreateAndEditPostPage = () => {
     }
   }, [selectedDate, mapsData]);
   
-  // 마커 클릭 시, 해당 마커의 콘텐츠를 정확하게 로드
-  useEffect(() => {
-    if (selectedMarker && selectedDate && Array.isArray(mapsData[selectedDate])) {
-      const selectedMarkerContent = mapsData[selectedDate].find(
-        marker => marker.lat === selectedMarker.lat && marker.lng === selectedMarker.lng
-      );
-  
-      if (selectedMarkerContent) {
-        setContent(selectedMarkerContent.content || { text: '', images: [], thumbnailIndex: null });
-      } else {
-        setContent({ text: '', images: [], thumbnailIndex: null });
-      }
+// selectedMarker가 변경될 때마다 콘텐츠를 로드
+useEffect(() => {
+  if (selectedMarker && selectedDate) {
+    const selectedMarkerContent = mapsData[selectedDate]?.find(
+      marker => marker.lat === selectedMarker.lat && marker.lng === selectedMarker.lng && marker.order === selectedMarker.order
+    );
+    if (selectedMarkerContent && selectedMarkerContent.content) {
+      setContent({
+        text: selectedMarkerContent.content.text || '',
+        images: selectedMarkerContent.content.images || [],
+        thumbnailIndex: selectedMarkerContent.content.thumbnailIndex || null,
+      });
+    } else {
+      setContent({ text: '', images: [], thumbnailIndex: null });
     }
-  }, [selectedMarker, selectedDate, mapsData]);
+  } else {
+    setContent({ text: '', images: [], thumbnailIndex: null });
+  }
+}, [selectedMarker, selectedDate, mapsData]);
 
   // 'Done' 버튼 클릭 시 여행 기간 내 모든 날짜 설정
   const handleDoneClick = () => {
@@ -134,35 +139,16 @@ const handleMarkerClick = useCallback((marker) => {
 
     if (currentMarkers && Array.isArray(currentMarkers)) {
       const foundMarker = currentMarkers.find(
-        m => m.lat === marker.lat && m.lng === marker.lng
+        m => m.lat === marker.lat && m.lng === marker.lng && m.order === marker.order // 마커의 order 값을 기준으로 찾음
       );
 
       if (foundMarker) {
+        console.log('Found marker:', foundMarker); // 디버깅 로그 추가
         setSelectedMarker(foundMarker); // 선택된 마커를 업데이트
       }
     }
   }
 }, [selectedDate, mapsData]);
-
-  useEffect(() => {
-    // 선택된 마커와 선택된 날짜가 유효한 경우에만 로드
-    if (selectedMarker && selectedDate && mapsData[selectedDate]?.length > 0) {
-      // 선택된 마커의 콘텐츠 찾기
-      const selectedMarkerContent = mapsData[selectedDate].find(
-        marker => marker.lat === selectedMarker.lat && marker.lng === selectedMarker.lng
-      );
-      
-      // 콘텐츠를 정확히 로드하고 상태 초기화
-      if (selectedMarkerContent) {
-        setContent(selectedMarkerContent.content || { text: '', images: [], thumbnailIndex: null });
-      } else {
-        setContent({ text: '', images: [], thumbnailIndex: null }); // 마커가 없을 경우 초기화
-      }
-    } else {
-      // 선택된 마커나 날짜가 없으면 상태 초기화
-      setContent({ text: '', images: [], thumbnailIndex: null });
-    }
-  }, [selectedMarker, selectedDate, mapsData]);
   
   // 마커에 대한 콘텐츠 저장 함수
   const handleSaveContent = (newContent) => {
@@ -170,7 +156,7 @@ const handleMarkerClick = useCallback((marker) => {
 
     setMapsData((prevMapsData) => {
       const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
-        marker.info === selectedMarker.info ? { ...marker, content: newContent } : marker // 마커 정보에 따라 업데이트
+        marker.order === selectedMarker.order ? { ...marker, content: newContent } : marker // 마커 정보에 따라 업데이트
       );
 
       return {

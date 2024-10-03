@@ -11,12 +11,14 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
   console.log('Contents에 전달된 selectedMarker:', selectedMarker);
   console.log('Contents에 전달된 content:', content)
 
-  // 마커가 변경될 때마다 이미지와 텍스트 상태를 초기화
-  useEffect(() => {
-    setText(content.text || ''); // 텍스트 초기화
-    setImages(content.images || []); // 이미지 상태 초기화
-    setThumbnailIndex(content.thumbnailIndex || null); // 썸네일 상태 초기화
-  }, [content]);
+// 마커의 order 값이 변경될 때마다 콘텐츠 상태를 초기화
+useEffect(() => {
+  if (selectedMarker) {
+    setText(content.text || '');
+    setImages(content.images || []);
+    setThumbnailIndex(content.thumbnailIndex || null);
+  }
+}, [content, selectedMarker]); // content와 selectedMarker의 order를 기준으로 상태 초기화
 
   // 이미지 업로드 처리 함수
   const handleImageUpload = (e) => {
