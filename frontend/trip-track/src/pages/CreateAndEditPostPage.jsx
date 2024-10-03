@@ -19,6 +19,8 @@ const CreateAndEditPostPage = () => {
   const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커
   const [mapsData, setMapsData] = useRecoilState(mapsDataState); // Recoil로 관리되는 지도 데이터
   const [markers, setMarkers] = useState([]); // 현재 선택된 날짜에 해당하는 마커
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+  const itemsPerPage = 1; // 페이지당 보여줄 마커 수
 
   // 콘텐츠 관련 상태 (텍스트 및 이미지)
   const [content, setContent] = useState({ text: '', images: [], thumbnailIndex: null }); // 장소에 대한 콘텐츠 상태
@@ -72,25 +74,33 @@ const CreateAndEditPostPage = () => {
     }
   }, [selectedDate, mapsData]);
   
-// selectedMarker가 변경될 때마다 콘텐츠를 로드
-useEffect(() => {
-  if (selectedMarker && selectedDate) {
-    const selectedMarkerContent = mapsData[selectedDate]?.find(
-      marker => marker.lat === selectedMarker.lat && marker.lng === selectedMarker.lng && marker.order === selectedMarker.order
-    );
-    if (selectedMarkerContent && selectedMarkerContent.content) {
-      setContent({
-        text: selectedMarkerContent.content.text || '',
-        images: selectedMarkerContent.content.images || [],
-        thumbnailIndex: selectedMarkerContent.content.thumbnailIndex || null,
-      });
+  // selectedMarker가 변경될 때마다 콘텐츠를 로드
+  useEffect(() => {
+    if (selectedMarker && selectedDate) {
+      const selectedMarkerContent = mapsData[selectedDate]?.find(
+        marker => marker.lat === selectedMarker.lat && marker.lng === selectedMarker.lng && marker.order === selectedMarker.order
+      );
+      if (selectedMarkerContent && selectedMarkerContent.content) {
+        setContent({
+          text: selectedMarkerContent.content.text || '',
+          images: selectedMarkerContent.content.images || [],
+          thumbnailIndex: selectedMarkerContent.content.thumbnailIndex || null,
+        });
+      } else {
+        setContent({ text: '', images: [], thumbnailIndex: null });
+      }
     } else {
       setContent({ text: '', images: [], thumbnailIndex: null });
     }
-  } else {
-    setContent({ text: '', images: [], thumbnailIndex: null });
-  }
-}, [selectedMarker, selectedDate, mapsData]);
+  }, [selectedMarker, selectedDate, mapsData]);
+
+  // 페이지 변경 함수
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    const startIndex = (page - 1) * itemsPerPage;
+    const selectedMarkerOnPage = markers[startIndex];
+    setSelectedMarker(selectedMarkerOnPage); // 페이지에 맞는 마커를 선택
+  };
 
   // 'Done' 버튼 클릭 시 여행 기간 내 모든 날짜 설정
   const handleDoneClick = () => {
@@ -150,7 +160,7 @@ useEffect(() => {
     });
   };
 
-  // 마커 클릭 시 호출되는 함수
+ // 마커 클릭 시 호출되는 함수
 const handleMarkerClick = useCallback((marker) => {
   if (selectedDate) {
     const currentMarkers = mapsData[selectedDate];
@@ -161,8 +171,11 @@ const handleMarkerClick = useCallback((marker) => {
       );
 
       if (foundMarker) {
-        console.log('Found marker:', foundMarker); // 디버깅 로그 추가
+        console.log('Found marker:', foundMarker);
         setSelectedMarker(foundMarker); // 선택된 마커를 업데이트
+        
+        // 해당 마커의 order를 기반으로 페이지 설정
+        setCurrentPage(foundMarker.order); // 현재 페이지를 마커의 순서에 맞게 설정
       }
     }
   }
@@ -202,6 +215,8 @@ const handleMarkerClick = useCallback((marker) => {
   const handleResetClick = () => {
     setSelectedOptions([]); // 선택된 항목 모두 초기화
   };
+
+  const totalPages = Math.ceil(markers.length / itemsPerPage);
 
   return (
     <div>
@@ -337,6 +352,65 @@ const handleMarkerClick = useCallback((marker) => {
               <Contents selectedMarker={selectedMarker} content={content} onSaveContent={handleSaveContent} />
             </div>
           )}
+        </div>
+      )}
+
+      {/* 마커가 있을 때만 페이지 넘기기 버튼을 렌더링 */}
+      {markers.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+          {/* 이전 버튼 */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            style={{
+              padding: '5px 10px',
+              fontSize: '12px',
+              marginRight: '5px',
+              backgroundColor: 'lightgray',
+              border: '1px solid gray',
+              borderRadius: '3px',
+              cursor: currentPage === 1 ? 'default' : 'pointer',
+            }}
+          >
+            이전
+          </button>
+
+          {/* 페이지 번호 버튼 */}
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              style={{
+                padding: '5px 10px',
+                fontSize: '12px',
+                marginRight: '5px',
+                backgroundColor: currentPage === index + 1 ? 'black' : 'white',
+                color: currentPage === index + 1 ? 'white' : 'black',
+                border: '1px solid gray',
+                borderRadius: '3px',
+                cursor: 'pointer',
+              }}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          {/* 다음 버튼 */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            style={{
+              padding: '5px 10px',
+              fontSize: '12px',
+              marginLeft: '5px',
+              backgroundColor: 'lightgray',
+              border: '1px solid gray',
+              borderRadius: '3px',
+              cursor: currentPage === totalPages ? 'default' : 'pointer',
+            }}
+          >
+            다음
+          </button>
         </div>
       )}
     </div>
