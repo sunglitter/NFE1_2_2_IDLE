@@ -22,8 +22,8 @@ const CreateAndEditPostPage = () => {
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
   const itemsPerPage = 1; // 페이지당 보여줄 마커 수
 
-  // 콘텐츠 관련 상태 (텍스트 및 이미지)
-  const [content, setContent] = useState({ text: '', images: [], thumbnailIndex: null }); // 장소에 대한 콘텐츠 상태
+  // 콘텐츠 관련 상태 (소제목, 텍스트 및 이미지)
+  const [content, setContent] = useState({ title: '', text: '', images: [], thumbnailIndex: null }); // 장소에 대한 콘텐츠 상태
 
   // 옵션 선택 상태 (목적, 인원 등)
   const [selectedOptions, setSelectedOptions] = useState([]); // 선택된 옵션들 (예: 여행 목적, 인원)
@@ -82,15 +82,16 @@ const CreateAndEditPostPage = () => {
       );
       if (selectedMarkerContent && selectedMarkerContent.content) {
         setContent({
+          title: selectedMarkerContent.content.title || '', // 소제목 추가
           text: selectedMarkerContent.content.text || '',
           images: selectedMarkerContent.content.images || [],
           thumbnailIndex: selectedMarkerContent.content.thumbnailIndex || null,
         });
       } else {
-        setContent({ text: '', images: [], thumbnailIndex: null });
+        setContent({ title: '', text: '', images: [], thumbnailIndex: null });
       }
     } else {
-      setContent({ text: '', images: [], thumbnailIndex: null });
+      setContent({ title: '', text: '', images: [], thumbnailIndex: null });
     }
   }, [selectedMarker, selectedDate, mapsData]);
 

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'; // PropTypes로 props 검증
 
 // 장소별 콘텐츠 추가 컴포넌트
 const Contents = ({ selectedMarker, content, onSaveContent }) => {
+  const [title, setTitle] = useState(content?.title || ''); // 소제목 상태
   const [text, setText] = useState(content?.text || ''); // 장소 설명 텍스트 상태
   const [images, setImages] = useState(content?.images || []); // 이미지 배열 상태
   const [thumbnailIndex, setThumbnailIndex] = useState(content?.thumbnailIndex || null); // 썸네일로 지정된 이미지 인덱스 상태
@@ -14,6 +15,7 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
 // 마커의 order 값이 변경될 때마다 콘텐츠 상태를 초기화
 useEffect(() => {
   if (selectedMarker) {
+    setTitle(content.title || ''); // 소제목 초기화
     setText(content.text || '');
     setImages(content.images || []);
     setThumbnailIndex(content.thumbnailIndex || null);
@@ -46,6 +48,7 @@ useEffect(() => {
   // 콘텐츠 저장 함수 (텍스트와 이미지 저장)
   const handleSave = () => {
     onSaveContent({
+      title,
       text,
       images,
       thumbnailIndex,
@@ -55,6 +58,19 @@ useEffect(() => {
   return (
     <div style={{ border: '1px solid #ddd', padding: '15px', marginTop: '20px', borderRadius: '10px' }}>
       <h3>{selectedMarker.info} - 장소 정보 추가</h3>
+
+       {/* 소제목 입력 UI */}
+       <div>
+        <label htmlFor="title">소제목:</label>
+        <input
+          id="title"
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="소제목을 입력하세요"
+          style={{ width: '100%', marginTop: '10px', padding: '10px' }}
+        />
+      </div>
 
       {/* 이미지 업로드 UI */}
       <div style={{ marginTop: '20px' }}>
@@ -166,6 +182,7 @@ Contents.propTypes = {
       info: PropTypes.string.isRequired, // 마커 정보
     }).isRequired,
     content: PropTypes.shape({
+      title: PropTypes.string, // 소제목
       text: PropTypes.string, // 텍스트 콘텐츠
       images: PropTypes.arrayOf(PropTypes.any), // 이미지 배열
       thumbnailIndex: PropTypes.number, // 썸네일로 지정된 이미지 인덱스
