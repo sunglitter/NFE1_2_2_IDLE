@@ -113,10 +113,14 @@ useEffect(() => {
   // 특정 날짜에 마커 추가하는 함수
   const handleAddLocation = (date, newLocation) => {
     setMapsData((prevMapsData) => {
+      const updatedMarkersForDate = prevMapsData[date] || [];
+      const newOrder = updatedMarkersForDate.length + 1; // 해당 날짜에 맞는 순서 계산
+  
       const updatedData = {
         ...prevMapsData,
-        [date]: [...(prevMapsData[date] || []), { ...newLocation, content: { text: '', image: null } }], // 새로운 마커 추가
+        [date]: [...updatedMarkersForDate, { ...newLocation, order: newOrder, content: { text: '', image: null } }],
       };
+      
       return updatedData;
     });
   };
