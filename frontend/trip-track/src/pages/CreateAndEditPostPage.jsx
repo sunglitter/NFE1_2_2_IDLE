@@ -158,6 +158,7 @@ const getCategoryValue = (categoryName) => {
     dailyLocations: Object.keys(mapsData).map(date => ({
       date,
       locations: mapsData[date].map(marker => ({
+        subtitle: marker.content.title, // 소제목
         name: marker.info, // 장소 이름
         lat: marker.lat,   // 위도
         lng: marker.lng,   // 경도
@@ -185,12 +186,9 @@ const getCategoryValue = (categoryName) => {
 
      // 나가기 버튼 클릭 핸들러
   const handleExit = () => {
-    // 나가기 로직 (경고 메시지, 저장 여부 확인 등)
-    // if (!isTemporarySaved && !window.confirm('저장되지 않은 내용이 있습니다. 나가시겠습니까?')) {
-    //   return;
-    // }
+   
     // 메인 페이지로 이동
-    navigate('/main-before-sign-in');
+    navigate('/main');
   };
 
    // 페이지 상태를 초기화하는 함수
