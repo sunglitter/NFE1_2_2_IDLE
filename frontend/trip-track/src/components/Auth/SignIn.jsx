@@ -32,7 +32,7 @@ const SignIn = () => {
       const { token } = response.data; // 응답에서 token 추출
       console.log("Token:", token); // token 값을 콘솔에 출력
       localStorage.setItem("token", token); // 토큰 저장
-      navigate("/main-after-sign-in"); // 로그인 후 메인 페이지로 이동
+      navigate("/main"); // 로그인 후 메인 페이지로 이동
     } catch (err) {
       setError("로그인 중 오류가 발생했습니다.");
       console.log("에러메세지", err.message);

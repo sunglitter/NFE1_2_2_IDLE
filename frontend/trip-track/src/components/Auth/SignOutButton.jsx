@@ -9,7 +9,7 @@ const SignOutButton = () => {
         localStorage.removeItem('userId'); 
 
         // 로그인 전 메인페이지로 리디렉션
-        navigate('/main-before-sign-in'); // 로그인 전 메인페이지의 경로로 변경
+        navigate('/main'); // 로그인 전 메인페이지의 경로로 변경
     };
 
     return (
