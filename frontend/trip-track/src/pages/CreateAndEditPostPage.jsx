@@ -5,10 +5,15 @@ import Map from '../components/Location/Map.jsx'; // 지도 컴포넌트
 import Contents from '../components/Location/Contents.jsx'; // 장소에 대한 콘텐츠 컴포넌트
 import { useRecoilState } from 'recoil'; // Recoil 상태 관리 라이브러리
 import { mapsDataState } from '../recoil/mapsState.js'; // 지도 데이터에 대한 Recoil 상태
+import NavBar from '../components/NavBar';
 import { FaUndo } from 'react-icons/fa'; // 아이콘 라이브러리 (초기화 아이콘)
+import { createPost } from '../utils/postApi.js'; // 포스트 생성 및 수정 API 가져오기
+
+import { useNavigate } from 'react-router-dom';
 
 // 포스트 생성 및 수정 페이지 컴포넌트
 const CreateAndEditPostPage = () => {
+  const [postTitle, setPostTitle] = useState(''); // 포스트 제목 상태
   // 날짜 선택 상태
   const [startDate, setStartDate] = useState(null); // 여행 시작 날짜
   const [endDate, setEndDate] = useState(null); // 여행 종료 날짜
@@ -28,6 +33,7 @@ const CreateAndEditPostPage = () => {
   // 옵션 선택 상태 (목적, 인원 등)
   const [selectedOptions, setSelectedOptions] = useState([]); // 선택된 옵션들 (예: 여행 목적, 인원)
   const [isOptionsOpen, setIsOptionsOpen] = useState(false); // 옵션 창이 열렸는지 여부
+  const navigate = useNavigate();
 
   // 카테고리별 선택 옵션 정의
   const categories = {
@@ -66,11 +72,11 @@ const CreateAndEditPostPage = () => {
     if (selectedDate && Array.isArray(mapsData[selectedDate])) {
       setMarkers(mapsData[selectedDate]); // 선택된 날짜에 해당하는 마커들을 로드
       setSelectedMarker(null); // 날짜 변경 시 선택된 마커 초기화
-      setContent({ text: '', images: [], thumbnailIndex: null }); // 콘텐츠 초기화
+      setContent({ title: '', text: '', images: [], thumbnailIndex: null }); // 콘텐츠 초기화
     } else {
       setMarkers([]); // 선택된 날짜에 마커가 없을 경우 초기화
       setSelectedMarker(null); // 선택된 마커도 초기화
-      setContent({ text: '', images: [], thumbnailIndex: null }); // 콘텐츠 초기화
+      setContent({ title: '', text: '', images: [], thumbnailIndex: null }); // 콘텐츠 초기화
     }
   }, [selectedDate, mapsData]);
   
@@ -85,15 +91,126 @@ const CreateAndEditPostPage = () => {
           title: selectedMarkerContent.content.title || '', // 소제목 추가
           text: selectedMarkerContent.content.text || '',
           images: selectedMarkerContent.content.images || [],
-          thumbnailIndex: selectedMarkerContent.content.thumbnailIndex || null,
         });
       } else {
-        setContent({ title: '', text: '', images: [], thumbnailIndex: null });
+        setContent({ title: '', text: '', images: [] });
       }
     } else {
-      setContent({ title: '', text: '', images: [], thumbnailIndex: null });
+      setContent({ title: '', text: '', images: [] });
     }
   }, [selectedMarker, selectedDate, mapsData]);
+
+    // 포스트 제목 입력 핸들러
+    const handleTitleChange = (e) => {
+      setPostTitle(e.target.value);
+    };
+
+
+  // 저장 버튼 클릭 핸들러
+  const handleSave = async () => {
+     // 1. 기본 입력 항목 검증 (제목, 날짜, 지도 데이터)
+  if (!postTitle || !startDate || !endDate || !Object.keys(mapsData).length) {
+    alert('필수 입력 항목이 누락되었습니다.');
+    return;
+  }
+
+
+  // 2. 각 날짜별로 적어도 하나 이상의 장소에 사진 또는 글이 입력되었는지 확인
+  const hasContent = Object.values(mapsData).some((locations = []) =>
+    locations.some(location => {
+      const description = location?.description?.trim() || ''; // description이 undefined일 경우 빈 문자열
+      const photos = location?.photos || []; // photos가 undefined일 경우 빈 배열로 설정
+      return (description !== '') || photos.length > 0;
+    })
+  );
+  
+
+  if (!hasContent) {
+    alert('적어도 하나 이상의 날짜에 사진 또는 글이 포함되어야 합니다.');
+    return;
+  }
+
+  // 가장 빠른 날짜의 가장 순서가 빠른 장소의 첫 번째 이미지를 썸네일로 선택하는 로직
+  let thumbnailImage = null;
+
+  Object.keys(mapsData).sort().some(date => {
+    const locations = mapsData[date];
+    return locations.some(location => {
+      if (location.content.images && location.content.images.length > 0) {
+        thumbnailImage = location.content.images[0];
+        return true;
+      }
+      return false;
+    });
+  });
+
+  // 포스트 데이터를 생성
+  const postData = {
+    title: {
+      title: postTitle,
+      dates: [startDate.toISOString(), endDate.toISOString()],
+      dailyLocations: Object.keys(mapsData).map(date => ({
+        date,
+        locations: mapsData[date].map(marker => ({
+          name: marker.info, // 장소 이름
+          lat: marker.lat,   // 위도
+          lng: marker.lng,   // 경도
+          description: marker.content.text || '', // 장소 설명
+          photos: marker.content.images || [],  // 사진
+          visitedOrder: marker.order  // 방문 순서
+        }))
+      })),
+      tripPurpose: selectedOptions.includes('휴가') ? '휴가' : '기타',
+      tripGroupType: selectedOptions.includes('가족') ? '가족' : '기타',
+      season: selectedOptions.includes('여름') ? '여름' : '기타',
+    },
+    channelId: '채널ID', // 실제 채널 ID를 입력
+    image: thumbnailImage || null // 선택된 썸네일 이미지 또는 null
+  };
+
+  try {
+    const result = await createPost(postData);
+    alert('포스트가 성공적으로 저장되었습니다!');
+    navigate(`/posts/${result._id}`);
+  } catch (error) {
+    alert(`포스트 저장에 실패했습니다: ${error.message}`);
+  }
+  };
+
+     // 나가기 버튼 클릭 핸들러
+  const handleExit = () => {
+    // 나가기 로직 (경고 메시지, 저장 여부 확인 등)
+    // if (!isTemporarySaved && !window.confirm('저장되지 않은 내용이 있습니다. 나가시겠습니까?')) {
+    //   return;
+    // }
+    // 메인 페이지로 이동
+    navigate('/main-before-sign-in');
+  };
+
+   // 페이지 상태를 초기화하는 함수
+  const resetPage = () => {
+    setStartDate(null);
+    setEndDate(null);
+    setDateRange([]);
+    setSelectedDate(null);
+    setSelectedMarker(null);
+    setMapsData({});
+    setMarkers([]);
+    setContent({ title: '', text: '', images: [], thumbnailIndex: null });
+  };
+
+  // 페이지 초기화 후 다시 로드하는 함수
+  const handleCreatePost = () => {
+    console.log('Create Post clicked.')
+    resetPage(); // 상태 초기화
+    navigate('/create-edit'); // 다시 현재 페이지로 리다이렉트
+  };
+
+  // 로그아웃 처리 함수
+  const handleSignOut = () => {
+    console.log('Sign Out clicked');
+    // 로그아웃 로직
+  };
 
   // 페이지 변경 함수
   const handlePageChange = (page) => {
@@ -182,21 +299,21 @@ const handleMarkerClick = useCallback((marker) => {
   }
 }, [selectedDate, mapsData]);
   
-  // 마커에 대한 콘텐츠 저장 함수
-  const handleSaveContent = (newContent) => {
-    if (!selectedMarker) return;
+ // 마커에 대한 콘텐츠 저장 함수
+const handleSaveContent = (newContent) => {
+  if (!selectedMarker) return;
 
-    setMapsData((prevMapsData) => {
-      const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
-        marker.order === selectedMarker.order ? { ...marker, content: newContent } : marker // 마커 정보에 따라 업데이트
-      );
+  setMapsData((prevMapsData) => {
+    const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
+      marker.order === selectedMarker.order ? { ...marker, content: newContent } : marker // 마커의 content를 newContent로 업데이트
+    );
 
-      return {
-        ...prevMapsData,
-        [selectedDate]: updatedMarkers, // 선택된 날짜에 대한 마커 업데이트
-      };
-    });
-  };
+    return {
+      ...prevMapsData,
+      [selectedDate]: updatedMarkers, // 선택된 날짜에 대한 마커 업데이트
+    };
+  });
+};
 
   // 여행 요소 선택 토글 (옵션 창 열기/닫기)
   const toggleOptions = () => {
@@ -222,6 +339,53 @@ const handleMarkerClick = useCallback((marker) => {
   return (
     <div>
       <h2>Create or Edit Post</h2>
+       {/* 상단 네비게이션 바 */}
+       <NavBar onCreatePost={handleCreatePost} onSignOut={handleSignOut} />
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+
+      <input
+        type="text"
+        value={postTitle}
+        onChange={handleTitleChange}
+        placeholder="포스트 제목을 입력하세요"
+        style={{
+          width: '100%',
+          padding: '10px',
+          fontSize: '16px',
+          marginBottom: '20px',
+        }}
+      />
+        {/* 나가기 버튼 */}
+        <button
+          onClick={handleExit}
+          style={{
+            backgroundColor: 'red',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          나가기
+        </button>
+
+        {/* 저장 버튼 */}
+        <button
+          onClick={handleSave}
+          style={{
+            backgroundColor: 'black',
+            color: 'white',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+          }}
+        >
+          저장
+        </button>
+      </div>
 
       {/* 날짜 선택 UI와 Done 버튼 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
@@ -350,7 +514,8 @@ const handleMarkerClick = useCallback((marker) => {
           {/* 선택된 마커가 있을 경우 콘텐츠 표시 */}
           {selectedMarker && (
             <div style={{ flexBasis: '300px' }}>
-              <Contents selectedMarker={selectedMarker} content={content} onSaveContent={handleSaveContent} />
+              <Contents selectedMarker={selectedMarker} content={content} onSaveContent={handleSaveContent}
+               />
             </div>
           )}
         </div>

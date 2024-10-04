@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { FaCrown } from 'react-icons/fa'; // 왕관 아이콘 사용
 import PropTypes from 'prop-types'; // PropTypes로 props 검증
 
 // 장소별 콘텐츠 추가 컴포넌트
@@ -7,20 +6,18 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
   const [title, setTitle] = useState(content?.title || ''); // 소제목 상태
   const [text, setText] = useState(content?.text || ''); // 장소 설명 텍스트 상태
   const [images, setImages] = useState(content?.images || []); // 이미지 배열 상태
-  const [thumbnailIndex, setThumbnailIndex] = useState(content?.thumbnailIndex || null); // 썸네일로 지정된 이미지 인덱스 상태
 
   console.log('Contents에 전달된 selectedMarker:', selectedMarker);
   console.log('Contents에 전달된 content:', content)
 
-// 마커의 order 값이 변경될 때마다 콘텐츠 상태를 초기화
-useEffect(() => {
-  if (selectedMarker) {
-    setTitle(content.title || ''); // 소제목 초기화
-    setText(content.text || '');
-    setImages(content.images || []);
-    setThumbnailIndex(content.thumbnailIndex || null);
-  }
-}, [content, selectedMarker]); // content와 selectedMarker의 order를 기준으로 상태 초기화
+  // 마커의 order 값이 변경될 때마다 콘텐츠 상태를 초기화
+  useEffect(() => {
+    if (selectedMarker) {
+      setTitle(content.title || ''); // 소제목 초기화
+      setText(content.text || '');
+      setImages(content.images || []);
+    }
+  }, [content, selectedMarker]); // content, selectedMarker, thumbnailIndex에 따라 상태 업데이트
 
   // 이미지 업로드 처리 함수
   const handleImageUpload = (e) => {
@@ -33,16 +30,6 @@ useEffect(() => {
   const handleImageDelete = (index) => {
     const updatedImages = images.filter((_, i) => i !== index); // 선택한 이미지 삭제
     setImages(updatedImages);
-    if (thumbnailIndex === index) {
-      setThumbnailIndex(null); // 썸네일로 설정된 이미지가 삭제될 경우 초기화
-    } else if (thumbnailIndex > index) {
-      setThumbnailIndex(thumbnailIndex - 1); // 삭제된 이미지 이후의 썸네일 인덱스를 업데이트
-    }
-  };
-
-  // 썸네일 이미지 지정 함수
-  const handleSetThumbnail = (index) => {
-    setThumbnailIndex(index); // 선택된 이미지를 썸네일로 지정
   };
 
   // 콘텐츠 저장 함수 (텍스트와 이미지 저장)
@@ -51,7 +38,6 @@ useEffect(() => {
       title,
       text,
       images,
-      thumbnailIndex,
     });
   };
 
@@ -59,8 +45,8 @@ useEffect(() => {
     <div style={{ border: '1px solid #ddd', padding: '15px', marginTop: '20px', borderRadius: '10px' }}>
       <h3>{selectedMarker.info} - 장소 정보 추가</h3>
 
-       {/* 소제목 입력 UI */}
-       <div>
+      {/* 소제목 입력 UI */}
+      <div>
         <label htmlFor="title">소제목:</label>
         <input
           id="title"
@@ -100,23 +86,6 @@ useEffect(() => {
                   alt="미리보기"
                   style={{ width: '100%', maxHeight: '150px', objectFit: 'cover', borderRadius: '5px' }}
                 />
-                {/* 왕관 아이콘 (썸네일 설정) */}
-                <button
-                  onClick={() => handleSetThumbnail(index)}
-                  style={{
-                    position: 'absolute',
-                    top: '5px',
-                    left: '5px',
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <FaCrown
-                    size={24}
-                    color={thumbnailIndex === index ? 'gold' : 'gray'} // 썸네일로 설정된 이미지는 금색 아이콘
-                  />
-                </button>
                 {/* 삭제 버튼 */}
                 <button
                   onClick={() => handleImageDelete(index)}
@@ -185,7 +154,6 @@ Contents.propTypes = {
       title: PropTypes.string, // 소제목
       text: PropTypes.string, // 텍스트 콘텐츠
       images: PropTypes.arrayOf(PropTypes.any), // 이미지 배열
-      thumbnailIndex: PropTypes.number, // 썸네일로 지정된 이미지 인덱스
     }),
     onSaveContent: PropTypes.func.isRequired, // 콘텐츠 저장 함수
 };
