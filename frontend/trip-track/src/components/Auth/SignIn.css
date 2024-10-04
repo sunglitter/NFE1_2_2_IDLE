@@ -1,0 +1,19 @@
+.page-container {
+    display: flex;
+    justify-content: center; /* 가로로 중앙 정렬 */
+    align-items: center; /* 세로로 중앙 정렬 */
+    height: 100vh; /* 전체 화면 높이 */
+    padding: 0 20px; /* 좌우 패딩 추가 */
+  }
+  
+  /* 로고 스타일 */
+  .logo {
+    margin-right: 0; /* 로고와 폼 사이에 간격 추가 */
+    margin-left: 100px;
+  }
+  
+  /* 로고 이미지 */
+  .logo img {
+    width: 200px;
+    height: auto;
+  }

@@ -1,0 +1,36 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: sticky; /* 스크롤 시 상단에 고정 */
+    z-index: 1000; /* 다른 요소들 위에 표시 */
+  }
+  
+  .title {
+    display: flex;
+    align-items: center;
+  }
+  
+  .header-logo {
+    width: 50px;
+    margin-right: 10px;
+  }
+  .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 16px;
+  }
+  
+  .nav-links li {
+    margin: 0;
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .nav-links a:hover {
+    text-decoration: underline;
+  }

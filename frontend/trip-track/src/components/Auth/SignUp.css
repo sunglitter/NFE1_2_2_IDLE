@@ -1,0 +1,52 @@
+/* 폼 컨테이너를 화면 중앙에 정렬 */
+.form-container {
+    width: 100%;
+    margin: 0 auto; /* 가로 중앙 정렬 */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 세로 가운데 정렬 */
+  }
+  
+  .signup-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px; /* 입력 필드 사이에 10px 간격 */
+    border: 2px solid#0040ff; /* 테두리 색을 파란색으로 설정 */
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .form-container input:focus {
+    outline: none;
+    border-color: #002050;
+  }
+  
+  .form-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #002050;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0040ff;
+  }
+  
+  /* 에러 메시지 스타일링 */
+  .error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+  }

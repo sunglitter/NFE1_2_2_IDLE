@@ -5,7 +5,7 @@ import Map from '../components/Location/Map.jsx'; // 지도 컴포넌트
 import Contents from '../components/Location/Contents.jsx'; // 장소에 대한 콘텐츠 컴포넌트
 import { useRecoilState } from 'recoil'; // Recoil 상태 관리 라이브러리
 import { mapsDataState } from '../recoil/mapsState.js'; // 지도 데이터에 대한 Recoil 상태
-import NavBar from '../components/NavBar';
+import HeaderAfterSignIn from '../components/Common/HeaderAfterSignIn.jsx';
 import { FaUndo } from 'react-icons/fa'; // 아이콘 라이브러리 (초기화 아이콘)
 import { createPost } from '../utils/postApi.js'; // 포스트 생성 및 수정 API 가져오기
 
@@ -346,7 +346,7 @@ const handleSaveContent = (newContent) => {
     <div>
       <h2>Create or Edit Post</h2>
        {/* 상단 네비게이션 바 */}
-       <NavBar onCreatePost={handleCreatePost} onSignOut={handleSignOut} />
+       <HeaderAfterSignIn onCreatePost={handleCreatePost} onSignOut={handleSignOut} />
 
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
 
