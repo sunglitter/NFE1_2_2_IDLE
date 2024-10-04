@@ -1,12 +1,12 @@
-import HeaderBeforeSignIn from '../Common/HeaderBeforeSignIn.jsx'
+import HeaderAfterSignIn from '../Common/HeaderAfterSignIn.jsx'
 
-const MainBeforeSignIn = () => {
+const MainAfterSignIn = () => {
     
     
     return (
       <div>
       {/* Header를 가장 상단에 배치 */}
-      <HeaderBeforeSignIn />
+      <HeaderAfterSignIn />
       
       <main>
       
@@ -17,5 +17,5 @@ const MainBeforeSignIn = () => {
        );
      };
     
-    export default MainBeforeSignIn
+    export default MainAfterSignIn
     
