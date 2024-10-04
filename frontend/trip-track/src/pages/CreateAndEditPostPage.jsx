@@ -72,11 +72,11 @@ const CreateAndEditPostPage = () => {
     if (selectedDate && Array.isArray(mapsData[selectedDate])) {
       setMarkers(mapsData[selectedDate]); // 선택된 날짜에 해당하는 마커들을 로드
       setSelectedMarker(null); // 날짜 변경 시 선택된 마커 초기화
-      setContent({ title: '', text: '', images: [], thumbnailIndex: null }); // 콘텐츠 초기화
+      setContent({ title: '', text: '', images: [] }); // 콘텐츠 초기화
     } else {
       setMarkers([]); // 선택된 날짜에 마커가 없을 경우 초기화
       setSelectedMarker(null); // 선택된 마커도 초기화
-      setContent({ title: '', text: '', images: [], thumbnailIndex: null }); // 콘텐츠 초기화
+      setContent({ title: '', text: '', images: [] }); // 콘텐츠 초기화
     }
   }, [selectedDate, mapsData]);
   
@@ -114,12 +114,18 @@ const CreateAndEditPostPage = () => {
     return;
   }
 
+  // 선택된 항목들에서 각각의 카테고리별로 값을 가져오기 위한 함수
+const getCategoryValue = (categoryName) => {
+  const categoryOptions = categories[categoryName];
+  const selectedOption = selectedOptions.find(option => categoryOptions.includes(option));
+  return selectedOption || '기타'; // 해당 카테고리에서 선택된 옵션이 없으면 '기타' 반환
+};
 
   // 2. 각 날짜별로 적어도 하나 이상의 장소에 사진 또는 글이 입력되었는지 확인
   const hasContent = Object.values(mapsData).some((locations = []) =>
     locations.some(location => {
-      const description = location?.description?.trim() || ''; // description이 undefined일 경우 빈 문자열
-      const photos = location?.photos || []; // photos가 undefined일 경우 빈 배열로 설정
+      const description = location?.content?.text?.trim() || ''; // description이 undefined일 경우 빈 문자열
+      const photos = location?.content?.images || []; // photos가 undefined일 경우 빈 배열로 설정
       return (description !== '') || photos.length > 0;
     })
   );
@@ -144,29 +150,29 @@ const CreateAndEditPostPage = () => {
     });
   });
 
-  // 포스트 데이터를 생성
-  const postData = {
-    title: {
-      title: postTitle,
-      dates: [startDate.toISOString(), endDate.toISOString()],
-      dailyLocations: Object.keys(mapsData).map(date => ({
-        date,
-        locations: mapsData[date].map(marker => ({
-          name: marker.info, // 장소 이름
-          lat: marker.lat,   // 위도
-          lng: marker.lng,   // 경도
-          description: marker.content.text || '', // 장소 설명
-          photos: marker.content.images || [],  // 사진
-          visitedOrder: marker.order  // 방문 순서
-        }))
-      })),
-      tripPurpose: selectedOptions.includes('휴가') ? '휴가' : '기타',
-      tripGroupType: selectedOptions.includes('가족') ? '가족' : '기타',
-      season: selectedOptions.includes('여름') ? '여름' : '기타',
-    },
-    channelId: '채널ID', // 실제 채널 ID를 입력
-    image: thumbnailImage || null // 선택된 썸네일 이미지 또는 null
-  };
+ // 포스트 데이터를 생성
+ const postData = {
+  title: {
+    title: postTitle,
+    dates: [startDate.toISOString(), endDate.toISOString()],
+    dailyLocations: Object.keys(mapsData).map(date => ({
+      date,
+      locations: mapsData[date].map(marker => ({
+        name: marker.info, // 장소 이름
+        lat: marker.lat,   // 위도
+        lng: marker.lng,   // 경도
+        description: marker.content.text || '', // 장소 설명
+        photos: marker.content.images || [],  // 사진
+        visitedOrder: marker.order  // 방문 순서
+      }))
+    })),
+    tripPurpose: getCategoryValue('목적'), // 선택된 목적 옵션
+    tripGroupType: getCategoryValue('인원'), // 선택된 인원 옵션
+    season: getCategoryValue('계절'), // 선택된 계절 옵션
+  },
+  channelId: '66ff441851e9a379d07c0c08', // 실제 채널 ID를 입력
+  image: thumbnailImage || null // 선택된 썸네일 이미지 또는 null
+};
 
   try {
     const result = await createPost(postData);
@@ -196,7 +202,7 @@ const CreateAndEditPostPage = () => {
     setSelectedMarker(null);
     setMapsData({});
     setMarkers([]);
-    setContent({ title: '', text: '', images: [], thumbnailIndex: null });
+    setContent({ title: '', text: '', images: [] });
   };
 
   // 페이지 초기화 후 다시 로드하는 함수

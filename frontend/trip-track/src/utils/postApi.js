@@ -2,7 +2,9 @@ import axios from 'axios';
 
 const API_BASE_URL = 'https://kdt.frontend.5th.programmers.co.kr:5008';
 
-// 1. 포스트 생성 API
+// 하드코딩된 JWT 토큰
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY2ZmY0NzIwNTFlOWEzNzlkMDdjMGMzNSIsImVtYWlsIjoiYWJjQGdtYWlsLmNvbSJ9LCJpYXQiOjE3MjgwMDU5MjF9.HHv9_EvCenDPp0pQcUAge_K54Vo4y2xkzzhCmBCkLkI'; // 하드코딩된 토큰
+
 export const createPost = async (postData) => {
   try {
     const formData = new FormData();
@@ -22,7 +24,7 @@ export const createPost = async (postData) => {
     const response = await axios.post(`${API_BASE_URL}/posts/create`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data', // 파일 업로드를 위해 multipart 사용
-        Authorization: `Bearer ${localStorage.getItem('token')}` // JWT 토큰 설정
+        Authorization: `Bearer ${token}` // 하드코딩된 JWT 토큰 사용
       }
     });
 
@@ -32,48 +34,6 @@ export const createPost = async (postData) => {
   }
 };
 
-// 2. 단일 포스트 조회 API
-export const getPost = async (postId) => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/posts/${postId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`, // JWT 토큰 설정
-      },
-    });
-    return response.data;
-  } catch (error) {
-    handleError(error); // 오류 처리
-  }
-};
-
-// 3. 포스트 수정 API
-export const updatePost = async (postId, updatedData) => {
-  try {
-    const response = await axios.put(`${API_BASE_URL}/posts/${postId}`, updatedData, {
-      headers: {
-        'Content-Type': 'application/json', // JSON 형식으로 데이터 전송
-        Authorization: `Bearer ${localStorage.getItem('token')}` // JWT 토큰 설정
-      }
-    });
-    return response.data;
-  } catch (error) {
-    handleError(error); // 오류 처리
-  }
-};
-
-// 4. 포스트 삭제 API
-export const deletePost = async (postId) => {
-  try {
-    const response = await axios.delete(`${API_BASE_URL}/posts/${postId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`, // JWT 토큰 설정
-      },
-    });
-    return response.data;
-  } catch (error) {
-    handleError(error); // 오류 처리
-  }
-};
 
 // 공통 에러 처리 함수
 const handleError = (error) => {
