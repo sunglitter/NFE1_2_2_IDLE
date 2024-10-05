@@ -6,7 +6,7 @@ import './PostList.css'; // 스타일링 파일
 
 const API_BASE_URL = 'https://kdt.frontend.5th.programmers.co.kr:5008'; // API 기본 URL
 
-const PostList = ({ channelId }) => {
+const PostList = ({ channelId, activeTab, isLoggedIn }) => {
   const [posts, setPosts] = useState([]); // 포스트 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 오류 상태
@@ -16,20 +16,34 @@ const PostList = ({ channelId }) => {
     try {
       const token = localStorage.getItem('token'); // 로그인 토큰 가져오기
 
-      // 토큰이 없는 경우 처리
-      if (!token) {
-        throw new Error('로그인 정보가 없습니다. 다시 로그인 해주세요.');
+      // 토큰이 필요한 탭 (Following)에서 로그인하지 않은 경우 오류 처리
+      if (activeTab === 'Following' && !isLoggedIn) {
+        throw new Error('로그인이 필요합니다.');
       }
+
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
       // API 요청
       const response = await axios.get(`${API_BASE_URL}/posts/channel/${channelId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       });
 
-      // 응답 데이터로 상태 업데이트
-      setPosts(response.data); 
+      let sortedPosts = response.data;
+
+      // 탭에 따른 정렬 방식 변경
+      if (activeTab === 'New') {
+        // 최신 포스트 먼저
+        sortedPosts = sortedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      } else if (activeTab === 'Trending') {
+        // 좋아요 수가 많은 순으로 정렬
+        sortedPosts = sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
+      } else if (activeTab === 'Following' && isLoggedIn) {
+        // 로그인된 사용자의 Following 포스트 목록만
+        // 실제 구현에서는 '팔로잉한 사용자' 데이터를 추가로 받아와야 함
+        sortedPosts = sortedPosts.filter(post => post.author.isFollowed);
+      }
+
+      setPosts(sortedPosts); 
       setLoading(false); // 로딩 완료
     } catch (err) {
       console.error('포스트 데이터를 가져오는 중 오류 발생:', err);
@@ -38,10 +52,10 @@ const PostList = ({ channelId }) => {
     }
   };
 
-  // 컴포넌트가 처음 렌더링될 때 API 호출
+  // 컴포넌트가 처음 렌더링될 때 및 탭 변경 시 API 호출
   useEffect(() => {
     fetchPosts();
-  }, [channelId]); // 채널 ID가 변경될 때마다 다시 호출
+  }, [channelId, activeTab]); // 채널 ID 또는 탭이 변경될 때마다 다시 호출
 
   // 로딩 상태 처리
   if (loading) {
@@ -63,7 +77,9 @@ const PostList = ({ channelId }) => {
 };
 
 PostList.propTypes = {
-    channelId: PropTypes.string.isRequired, // channelId는 필수로, 문자열이어야 함
-  };
+  channelId: PropTypes.string.isRequired, // 채널 ID
+  activeTab: PropTypes.string.isRequired, // 현재 선택된 탭 (New, Trending, Following)
+  isLoggedIn: PropTypes.bool.isRequired,  // 로그인 여부
+};
 
 export default PostList;

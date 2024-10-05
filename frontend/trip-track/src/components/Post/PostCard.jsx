@@ -3,70 +3,84 @@ import PropTypes from 'prop-types';
 import { getCountryName } from '../../utils/postApi.js'; // getCountryName 함수 임포트
 
 const PostCard = ({ post }) => {
-  // title을 JSON 파싱
-  const parsedTitle = JSON.parse(post.title); // title을 JSON 문자열에서 객체로 변환
+  const parsedTitle = JSON.parse(post.title); // title을 JSON 파싱
 
-  // 이미지가 있는지 확인하고, 없으면 첫 번째 방문 장소의 설명을 대체 텍스트로 사용
   const thumbnailImage = post.image || null;
   const firstLocation = parsedTitle?.dailyLocations?.[0]?.locations?.[0]?.description || '장소 설명이 없습니다';
 
-  // 날짜 포맷을 사용자에게 보기 쉽게 변환하는 함수
-  const formatDate = (dateString) => {
-    if (!dateString) return '날짜 정보 없음'; // dateString이 없을 경우 기본값 반환
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
   const [countries, setCountries] = useState([]); // 국가 목록을 저장할 배열
 
-  // 모든 장소의 좌표를 바탕으로 국가명을 가져오는 함수
   const fetchCountries = async () => {
     const countrySet = new Set();
 
-    // dailyLocations의 모든 장소에 대해 국가명 요청
     if (parsedTitle?.dailyLocations?.length > 0) {
       for (const day of parsedTitle.dailyLocations) {
         for (const location of day.locations) {
-            console.log(`위도: ${location.lat}, 경도: ${location.lng}`); // 좌표 디버깅
           const country = await getCountryName(location.lat, location.lng);
-          console.log('가져온 국가:', country); // 가져온 국가 이름 확인
-          countrySet.add(country); // 중복되지 않도록 Set에 국가명 추가
+          countrySet.add(country);
         }
       }
     }
-    setCountries(Array.from(countrySet)); // Set을 배열로 변환하여 상태 업데이트
+    setCountries(Array.from(countrySet)); 
   };
 
   useEffect(() => {
-    console.log('Post data:', post); // post 데이터를 확인하는 디버깅 로그
-    fetchCountries(); // 국가 목록 가져오기
+    fetchCountries(); 
   }, [post]);
+
+  // 상대 시간 포맷팅 함수
+  const formatRelativeDate = (dateString) => {
+    const now = new Date();
+    const postDate = new Date(dateString);
+    const diffInMs = now - postDate;
+    
+    const diffInSeconds = Math.floor(diffInMs / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const diffInYears = Math.floor(diffInDays / 365);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds}초 전`;
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes}분 전`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours}시간 전`;
+    } else if (diffInDays < 7) {
+      return `${diffInDays}일 전`;
+    } else if (diffInWeeks < 5) {
+      return `${diffInWeeks}주 전`;
+    } else if (diffInMonths < 12) {
+      return `${diffInMonths}개월 전`;
+    } else {
+      return `${diffInYears}년 전`;
+    }
+  };
 
   return (
     <div className="post-card">
-      {/* 썸네일 이미지 영역 */}
       <div className="thumbnail">
         {thumbnailImage ? (
           <img src={thumbnailImage} alt="Post Thumbnail" className="thumbnail-image" />
         ) : (
           <div className="thumbnail-placeholder">
-            <p>{firstLocation.substring(0, 20)}...</p> {/* 장소 설명 텍스트 일부 */}
+            <p>{firstLocation.substring(0, 20)}...</p> 
           </div>
         )}
       </div>
 
-      {/* 포스트 정보 영역 */}
       <div className="post-info">
         <h2 className="post-title">{parsedTitle?.title || '제목 없음'}</h2>
         <div className="post-details">
+          <p>여행 장소: {parsedTitle?.dailyLocations?.[0]?.locations?.[0]?.name || '장소 정보 없음'}</p>
           <p>
-            여행 기간: {parsedTitle?.dates?.[0] ? formatDate(parsedTitle.dates[0]) : '기간 정보 없음'} ~{' '}
-            {parsedTitle?.dates?.[1] ? formatDate(parsedTitle.dates[1]) : '기간 정보 없음'}
+            여행 기간: {parsedTitle?.dates?.[0] ? formatRelativeDate(parsedTitle.dates[0]) : '기간 정보 없음'} ~{' '}
+            {parsedTitle?.dates?.[1] ? formatRelativeDate(parsedTitle.dates[1]) : '기간 정보 없음'}
           </p>
-          <p>작성일: {formatDate(post.createdAt)}</p>
+          <p>작성일: {formatRelativeDate(post.createdAt)}</p> {/* 상대 시간으로 작성일 표시 */}
           <p>작성자: {post.author?.fullName || '작성자 정보 없음'}</p>
-          
-          {/* 방문한 국가 목록 표시 */}
           <p>방문한 국가: {countries.length > 0 ? countries.join(', ') : '국가 정보 없음'}</p>
         </div>
         <div className="post-footer">
