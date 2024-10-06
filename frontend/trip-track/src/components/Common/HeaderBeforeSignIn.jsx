@@ -3,7 +3,7 @@ import './HeaderBeforeSignIn.css'
 
 const HeaderBeforeSignIn = () => {
   return (
-    <nav>
+    <nav className='header-before-signin'>
       <h1 className='logos'>Trip Track</h1>
       <div className='buttons'>
         {/* Sign In / Sign Up 버튼만 표시 */}

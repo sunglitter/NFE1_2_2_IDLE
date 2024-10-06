@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
 import "./SignIn.css";
 import api from "../../utils/authApi";
+import HeaderBeforeSignIn from "../Common/HeaderBeforeSignIn";
+
 
 const SignIn = () => {
   const [email, setEmail] = useState(""); // 이메일 상태 변수
@@ -41,13 +43,17 @@ const SignIn = () => {
   };
 
   return (
+
     <div className="page-container">
+      <div className="header-before-signin">
+        <HeaderBeforeSignIn />
+      </div>
       <div className="logo">
         <img src={Logo} alt="Logo" />
       </div>
       <div className="form-container">
         <h3>로그인</h3>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p>{error}</p>}
         <form onSubmit={handleSubmit}>
           <div>
             <input
@@ -71,7 +77,7 @@ const SignIn = () => {
           </div>
           <button type="submit">Sign In</button>
           <p>
-          Don&apos;t have account? <Link to="/signup">Sign up!</Link>
+            Don&apos;t have account? <Link className="link" to="/signup">Sign up!</Link>
           </p>
         </form>
       </div>
