@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
+import './PostHeaders.css'; // 필요한 CSS 추가
 
 const PostHeaders = ({ activeTab, onFilterChange, isCurrentUser, onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -10,22 +11,24 @@ const PostHeaders = ({ activeTab, onFilterChange, isCurrentUser, onSearch }) => 
   };
 
   return (
-    <div className="post-header d-flex justify-content-between mx-3">
-      <form className="d-flex" role="search" onSubmit={handleSearch}>
+    <div className="post-header d-flex justify-content-between mx-3 align-items-center">
+      {/* 검색 폼 */}
+      <form className="search-form d-flex" role="search" onSubmit={handleSearch}>
         <input
-          className="form-control me-2"
+          className="form-control search-input"
           type="search"
           placeholder="포스트 검색"
           aria-label="Search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <button className="btn btn-outline-primary" type="submit">
+        <button className="btn btn-search" type="submit">
           <CiSearch />
         </button>
       </form>
 
-      <ul className="nav nav-underline">
+      {/* 탭 */}
+      <ul className="nav post-nav">
         <li className="nav-item">
           <button
             className={`nav-link ${activeTab === "My Posts" ? "active" : ""}`}

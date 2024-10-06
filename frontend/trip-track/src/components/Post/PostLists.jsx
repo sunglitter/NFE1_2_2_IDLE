@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import PostCard from "./PostCard";
+import './PostLists.css'; // CSS 파일 추가
 
 const PostLists = ({ userId, filter, searchQuery }) => {
   const [posts, setPosts] = useState([]);
@@ -62,9 +63,9 @@ const PostLists = ({ userId, filter, searchQuery }) => {
   }, [userId, filter, searchQuery]);
 
   return (
-    <div className="row row-cols-1 row-cols-md-4 g-4 mx-2 mb-2 mt-1">
+    <div className="post-grid"> {/* 그리드 컨테이너 추가 */}
       {posts.map((post) => (
-        <div className="col" key={post._id}>
+        <div key={post._id}>
           <PostCard post={post} />
         </div>
       ))}

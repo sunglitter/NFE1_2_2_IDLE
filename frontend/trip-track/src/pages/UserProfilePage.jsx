@@ -9,6 +9,8 @@ import UserProfile from '../components/Profile/UserProfile';
 import PostHeaders from "../components/Post/PostHeaders";
 import PostLists from "../components/Post/PostLists";
 import FollowListModal from "../components/Common/FollowListModal";
+import HeaderAfterSignIn from '../components/Common/HeaderAfterSignIn';
+import './UserProfilePage.css';
 
 const UserProfilePage = () => {
   const { userId } = useParams();
@@ -106,6 +108,7 @@ const UserProfilePage = () => {
     <>
       {userData && (
         <div className="container mt-4">
+          <HeaderAfterSignIn />
           <UserProfile
             userData={userData}
             isCurrentUser={currentUser ? currentUser._id === userId : false}

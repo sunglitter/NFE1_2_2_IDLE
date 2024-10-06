@@ -1,99 +1,80 @@
+import React from "react";
 import PropTypes from "prop-types";
 import { FiEdit } from "react-icons/fi";
+import './UserProfile.css';
 
 const UserProfile = ({
   userData,
   isCurrentUser,
-  onEditProfile, // 프로필 수정으로 이동하는 함수
-  onFollow, // 팔로우/언팔로우 함수
+  onEditProfile,
+  onFollow,
   isFollowing,
-  isLoggedIn,
-  setModalActiveTab, // setModalActiveTab prop 추가
+  isLoggedIn,  // isLoggedIn 사용
+  setModalActiveTab,
 }) => {
   return (
-    <div
-      className="d-flex flex-column align-items-center justify-content-center"
-      style={{ padding: "30px" }}
-    >
-      <div className="d-flex w-100 align-items-center">
-        <div className="flex-shrink-0">
+    <div className="profile-container">
+      <div className="profile-row">
+        {/* 프로필 이미지 */}
+        <div className="profile-image">
           <img
             src={
               userData.image ||
               `${import.meta.env.BASE_URL}images/defaultProfile.png`
             }
             alt="Profile"
-            className="profile-image"
-            style={{ width: "160px", height: "160px" }}
           />
         </div>
-        <div className="flex-grow-1 ms-3 d-flex flex-column">
-          <div className="d-flex justify-content-between align-items-center">
+
+        <div className="profile-info">
+          <div className="profile-name">
             <div className="fw-bold fs-5">
               {userData.fullName || "Unknown User"}
             </div>
 
+            {/* 수정 버튼 또는 팔로우/언팔로우 버튼 */}
             {isCurrentUser ? (
-              // 프로필 수정 버튼
               <FiEdit
-                style={{
-                  cursor: "pointer",
-                  fontSize: "24px",
-                  color: "#0066ff",
-                }}
-                onClick={onEditProfile} // 프로필 수정 페이지로 이동
+                className="edit-icon"
+                onClick={onEditProfile}
               />
             ) : (
-              // Follow/Unfollow 버튼
-              <button
-                className="btn"
-                onClick={onFollow}
-                style={{
-                  backgroundColor: isLoggedIn
-                    ? isFollowing
-                      ? "#002050"
-                      : "#0066ff"
-                    : "#0066ff",
-                  color: "white",
-                  border: "none",
-                }}
-              >
-                {isLoggedIn ? (isFollowing ? "Unfollow" : "Follow") : "Follow"}
-              </button>
+              isLoggedIn && ( // 로그인된 사용자만 팔로우/언팔로우 버튼을 볼 수 있음
+                <button
+                  className="follow-button"
+                  onClick={onFollow}
+                  style={{
+                    backgroundColor: isFollowing ? "#002050" : "#0066ff",
+                    color: "white",
+                  }}
+                >
+                  {isFollowing ? "Unfollow" : "Follow"}
+                </button>
+              )
             )}
           </div>
 
-          <div className="mt-2 d-flex align-items-center">
-            <span className="me-4">{userData.posts?.length || 0} posts</span>
-            {/* 팔로워 수와 팔로잉 수를 별도의 버튼으로 분리 */}
-            <div className="d-flex">
-              <button
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#followListModal"
-                className="btn btn-link text-reset me-4 p-0"
-                style={{ border: "none", outline: "none", textDecoration: "none" }}
-                onClick={() => setModalActiveTab("followers")}
-              >
-                <span>{userData.followers?.length || 0} followers</span>
-              </button>
-              <button
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#followListModal"
-                className="btn btn-link text-reset p-0"
-                style={{ border: "none", outline: "none", textDecoration: "none" }}
-                onClick={() => setModalActiveTab("following")}
-              >
-                <span>{userData.following?.length || 0} followings</span>
-              </button>
-            </div>
+          {/* 포스트 수, 팔로워 수, 팔로잉 수 */}
+          <div className="profile-stats">
+            <span>{userData.posts?.length || 0} posts</span>
+            <button
+              type="button"
+              className="btn btn-link"
+              onClick={() => setModalActiveTab("followers")}
+            >
+              {userData.followers?.length || 0} followers
+            </button>
+            <button
+              type="button"
+              className="btn btn-link"
+              onClick={() => setModalActiveTab("following")}
+            >
+              {userData.following?.length || 0} followings
+            </button>
           </div>
 
-          <div
-            className="mt-2"
-            style={{ maxWidth: "50%", minHeight: "50px", overflow: "hidden" }}
-          >
+          {/* 사용자 bio */}
+          <div className="profile-bio">
             {userData.coverImage || "No bio available"}
           </div>
         </div>
@@ -103,20 +84,20 @@ const UserProfile = ({
 };
 
 UserProfile.propTypes = {
-    userData: PropTypes.shape({
-      image: PropTypes.string,
-      fullName: PropTypes.string,
-      posts: PropTypes.arrayOf(PropTypes.object), // 게시물 목록
-      followers: PropTypes.arrayOf(PropTypes.object), // 팔로워 목록
-      following: PropTypes.arrayOf(PropTypes.object), // 팔로잉 목록
-      coverImage: PropTypes.string, // 사용자 커버 이미지
-    }).isRequired, // userData는 필수
-    isCurrentUser: PropTypes.bool.isRequired, // 현재 사용자 여부
-    onEditProfile: PropTypes.func.isRequired, // 프로필 수정 함수
-    onFollow: PropTypes.func.isRequired, // 팔로우/언팔로우 함수
-    isFollowing: PropTypes.bool.isRequired, // 팔로우 여부
-    isLoggedIn: PropTypes.bool.isRequired, // 로그인 여부
-    setModalActiveTab: PropTypes.func.isRequired, // 모달 활성화 탭 설정 함수
-  };
-  
+  userData: PropTypes.shape({
+    image: PropTypes.string,
+    fullName: PropTypes.string,
+    posts: PropTypes.arrayOf(PropTypes.object),
+    followers: PropTypes.arrayOf(PropTypes.object),
+    following: PropTypes.arrayOf(PropTypes.object),
+    coverImage: PropTypes.string,
+  }).isRequired,
+  isCurrentUser: PropTypes.bool.isRequired,
+  onEditProfile: PropTypes.func.isRequired,
+  onFollow: PropTypes.func.isRequired,
+  isFollowing: PropTypes.bool.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired, // isLoggedIn을 필수로 설정
+  setModalActiveTab: PropTypes.func.isRequired,
+};
+
 export default UserProfile;
