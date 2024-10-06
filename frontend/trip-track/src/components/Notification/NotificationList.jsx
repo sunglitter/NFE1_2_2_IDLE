@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { getNotifications, markNotificationAsSeen } from "../../services/notificationService";
 import { formatTimeAgo } from "../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
+import './NotificationList.css';
 
 const NotificationList = ({ setShowModal }) => {
   const [notifications, setNotifications] = useState([]);
