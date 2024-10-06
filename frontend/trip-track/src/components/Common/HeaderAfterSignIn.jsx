@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import SignOutButton from '../Auth/SignOutButton';
 import { useEffect, useState } from 'react';
 import NotificationList from '../Notification/NotificationList'; // NotificationList 컴포넌트 가져오기
+import './HeaderAfterSignIn.css';
+
 
 const HeaderAfterSignIn = () => {
   const navigate = useNavigate();
