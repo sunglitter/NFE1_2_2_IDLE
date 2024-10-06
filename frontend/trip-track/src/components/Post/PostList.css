@@ -1,0 +1,7 @@
+.post-list {
+    
+    max-width: calc(100vw - 5rem);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, auto));
+    gap: 1rem;
+}

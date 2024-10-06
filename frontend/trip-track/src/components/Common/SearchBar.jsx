@@ -78,6 +78,7 @@ const SearchBar = ({ onSearch, onFilter, onTabChange, postCount }) => {
   return (
     <div className="search-bar-container">
       {/* 왼쪽: 검색창과 조건 설정 버튼 */}
+{/* 
       <div className="search-bar-wrap">
         <div className="search-input">
           <div className="search-bar">
@@ -94,39 +95,22 @@ const SearchBar = ({ onSearch, onFilter, onTabChange, postCount }) => {
           </div>
         </div>
 
-        {/* 여행 필터 선택 버튼 */}
-        <button onClick={toggleFilters} style={{ padding: '5px 10px' }}>
+
+        <button onClick={toggleFilters} >
           조건 설정
         </button>
 
-        {/* 필터 선택 창 */}
+
         {isFiltersOpen && (
-          <div
-            style={{
-              marginBottom: '10px',
-              padding: '10px',
-              backgroundColor: '#f0f0f0',
-              borderRadius: '5px',
-            }}
-          >
+          <div>
             {Object.keys(categories).map((category) => (
-              <div key={category} style={{ marginBottom: '10px' }}>
+              <div key={category} >
                 <h5>{category}</h5>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <div>
                   {categories[category].map((filter) => (
                     <button
                       key={filter}
                       onClick={() => handleFilterClick(filter)}
-                      style={{
-                        padding: '5px 10px',
-                        backgroundColor: selectedFilters.includes(filter)
-                          ? 'black'
-                          : 'lightgrey',
-                        color: selectedFilters.includes(filter) ? 'white' : 'black',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                      }}
                     >
                       {filter}
                     </button>
@@ -137,62 +121,40 @@ const SearchBar = ({ onSearch, onFilter, onTabChange, postCount }) => {
           </div>
         )}
 
-        {/* 선택된 필터 표시 및 초기화 */}
+
         {selectedFilters.length > 0 && (
-          <div style={{ marginBottom: '10px' }}>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <div>
+            <div>
               {selectedFilters.map((filter) => (
                 <div
                   key={filter}
-                  style={{
-                    padding: '10px',
-                    backgroundColor: 'black',
-                    color: 'white',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
                   onClick={() => handleFilterClick(filter)} // 필터 클릭 시 해제 처리
                 >
                   {filter}
-                  <span style={{ marginLeft: '5px', cursor: 'pointer' }}>✕</span>
+                  <span>✕</span>
                 </div>
               ))}
             </div>
             <button
               onClick={handleResetClick}
-              style={{
-                padding: '5px 10px',
-                backgroundColor: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
             >
               <FaUndo size={24} color="black" />
             </button>
           </div>
         )}
 
-        {/* 결과 보기 버튼 */}
+
         {selectedFilters.length > 0 && (
-          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <div>
             <button
               onClick={handleSearch} // 클릭 시 검색 실행
-              style={{
-                padding: '10px 20px',
-                backgroundColor: 'black',
-                color: 'white',
-                borderRadius: '5px',
-                border: 'none',
-                cursor: 'pointer',
-              }}
             >
-              {`${postCount}개의 결과 보기`} {/* 필터링된 포스트 개수 표시 */}
+              {`${postCount}개의 결과 보기`} 
             </button>
           </div>
         )}
       </div>
+       */}
 
       {/* 오른쪽: 드롭다운 + 탭 버튼들 */}
       <div className="tab-container">
@@ -217,16 +179,16 @@ const SearchBar = ({ onSearch, onFilter, onTabChange, postCount }) => {
 
         {/* 탭 버튼 */}
         <button
-          className={`tab-button ${activeTab === 'New' ? 'active' : ''}`}
-          onClick={() => handleTabClick('New')}
-        >
-          New
-        </button>
-        <button
           className={`tab-button ${activeTab === 'Trending' ? 'active' : ''}`}
           onClick={() => handleTabClick('Trending')}
         >
           Trending
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'New' ? 'active' : ''}`}
+          onClick={() => handleTabClick('New')}
+        >
+          New
         </button>
 
         {/* Following 탭: 로그인된 경우에만 렌더링 */}

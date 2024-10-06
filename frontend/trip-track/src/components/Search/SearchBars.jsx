@@ -33,7 +33,7 @@ const SearchBars = ({ initialValue }) => {
   };
 
   return (
-    <div className="search-bar-container">
+    <div className='search-input-container'>
       <input
         type="text"
         className="search-bar-input"

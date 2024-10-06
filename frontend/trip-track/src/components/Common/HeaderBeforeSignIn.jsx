@@ -4,14 +4,14 @@ import './HeaderBeforeSignIn.css'
 const HeaderBeforeSignIn = () => {
   return (
     <nav>
-      <div className='logo'>Trip Track</div>
+      <h1 className='logos'>Trip Track</h1>
       <div className='buttons'>
         {/* Sign In / Sign Up 버튼만 표시 */}
         <Link to="/signin">
-          <button >Sign In</button>
+          <button>Sign In</button>
         </Link>
         <Link to="/signup">
-          <button >Sign Up</button>
+          <button>Sign Up</button>
         </Link>
       </div>
     </nav>

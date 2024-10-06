@@ -1,4 +1,4 @@
-.post-card {
+/* .post-card {
     border: 1px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
@@ -46,4 +46,34 @@
     font-size: 14px;
     color: #555;
   }
-  
+   */
+
+* {
+  text-decoration: none;
+}
+
+.post-card {
+  /* width: 18rem; */
+  height: 24rem;
+  overflow: hidden;
+  padding: 1rem;
+  border: 1px solid #0066ff;
+  border-radius: 0.5rem;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  max-height: 12rem;
+}
+
+.thumbnail-image,
+.thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-info {
+  margin-top: 1rem;
+}

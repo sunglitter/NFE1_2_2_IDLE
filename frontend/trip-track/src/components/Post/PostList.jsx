@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import PostCard from './PostCard'; // PostCard 컴포넌트
 import './PostList.css'; // 스타일링 파일
 
@@ -60,7 +60,7 @@ const PostList = ({ channelId, activeTab, isLoggedIn }) => {
         sortedPosts = sortedPosts.filter((post) => followingUsers.includes(post.author._id));
       }
 
-      setPosts(sortedPosts); 
+      setPosts(sortedPosts);
       setLoading(false); // 로딩 완료
     } catch (err) {
       console.error('포스트 데이터를 가져오는 중 오류 발생:', err);
@@ -90,10 +90,10 @@ const PostList = ({ channelId, activeTab, isLoggedIn }) => {
   return (
     <div className="post-list">
       {posts.map((post) => (
-  <Link key={post._id} to={`/edit-post/${post._id}`}>
-    <PostCard post={post} /> {/* PostCard 컴포넌트를 클릭 시 상세 페이지로 이동 */}
-  </Link>
-))}
+        <Link key={post._id} to={`/edit-post/${post._id}`}>
+          <PostCard post={post} /> {/* PostCard 컴포넌트를 클릭 시 상세 페이지로 이동 */}
+        </Link>
+      ))}
     </div>
   );
 };

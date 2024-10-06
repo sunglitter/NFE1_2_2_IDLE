@@ -2,5 +2,29 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #002050;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 2rem;
+}
+
+button {
+    margin-left: 0.5rem;
+    border: 1px solid #0066ff;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0066ff;
+    color: #fff;
 }
 
