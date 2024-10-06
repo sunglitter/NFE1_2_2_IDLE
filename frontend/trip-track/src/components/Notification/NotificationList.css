@@ -42,3 +42,13 @@
     /* 읽음 여부에 따른 배경색 */
 }
 
+.notification-item img {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.noti-time {
+    float: right;
+}

@@ -64,14 +64,11 @@ const NotificationList = ({ setShowModal }) => {
                   <img
                     src={notification.author.image || `${import.meta.env.BASE_URL}images/defaultProfile.png`}
                     alt={notification.author.fullName}
-                  // style={{ width: 40, height: 40, borderRadius: "50%", marginRight: 10 }}
                   />
                   <span>
                     {notification.author.fullName}님이 팔로우했습니다.
                   </span>
-                  <span
-                  // style={{ float: "right" }}
-                  >
+                  <span className="noti-time">
                     {formatTimeAgo(notification.createdAt)}
                   </span>
                 </div>
