@@ -172,14 +172,16 @@ const PostDetailPage = () => {
 
       {/* 선택된 장소 정보 및 방문 순서 표시 */}
       {currentLocation && (
-        <div>
+        <div className='location-order'>
           <p>방문한 장소: {currentLocation.name}</p>
           <p>방문 순서: {currentLocation.visitedOrder}</p> {/* 방문 순서 표시 */}
         </div>
       )}
 
       {/* PostContent로 장소 정보 및 포스트 ID 전달 */}
+      <div className="loca-info">
       {currentLocation && <PostContent location={currentLocation} postId={post._id} />}
+      </div>
     </div>
   );
 };
