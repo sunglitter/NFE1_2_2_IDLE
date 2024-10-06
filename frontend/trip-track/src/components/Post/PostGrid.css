@@ -1,0 +1,46 @@
+/* 기존 CSS와 함께 이 스타일을 추가하거나 기존 스타일을 교체 */
+.post-grid-container {
+    display: grid; /* Grid 레이아웃 사용 */
+    grid-template-columns: repeat(4, 1fr); /* 가로로 4개의 post-card 배치 */
+    gap: 20px; /* 카드 사이의 간격 설정 */
+    width: 100%; /* 전체 너비 사용 */
+    padding: 20px;
+    box-sizing: border-box; /* padding을 포함한 박스 크기 계산 */
+    margin-top: 20px;
+    overflow-y: auto; /* 수직 스크롤 허용 */
+    height: calc(100vh - 400px); /* 고정된 높이 설정: 전체 뷰 높이 - 상단 여백 */
+    padding-bottom: 50px; /* 아래 여백 추가 */
+}
+
+/* 스크롤바 숨기기 */
+.post-grid-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera 스크롤바 숨김 */
+}
+
+.post-grid-container {
+    -ms-overflow-style: none;  /* IE 및 Edge 스크롤바 숨김 */
+    scrollbar-width: none;  /* Firefox 스크롤바 숨김 */
+}
+
+/* 전체 레이아웃 중앙 정렬 */
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* 상단에서 시작 */
+    width: 100%;
+    margin-bottom: 50px; /* 하단 여백 추가 */
+}
+
+/* 검색 결과 영역 정렬 */
+.search-results-container {
+    width: 80%; /* 전체 페이지 너비의 80% 사용 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 검색 결과 개수와 설명 중앙 정렬 */
+.search-results-text {
+    text-align: center;
+    margin-bottom: 20px;
+}

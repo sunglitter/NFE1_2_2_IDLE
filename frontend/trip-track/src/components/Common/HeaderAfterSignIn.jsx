@@ -1,40 +1,66 @@
 import { FaBell } from 'react-icons/fa';
-import { useNavigate, Link } from 'react-router-dom'; // Link 추가
+import { useNavigate, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import SignOutButton from '../Auth/SignOutButton'; // SignOutButton 컴포넌트 가져오기
+import SignOutButton from '../Auth/SignOutButton';
+import { useEffect, useState } from 'react';
+import NotificationList from '../Notification/NotificationList'; // NotificationList 컴포넌트 가져오기
 
 const HeaderAfterSignIn = ({ onCreatePost }) => {
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState(null);
+  const [showModal, setShowModal] = useState(false); // 모달 상태 추가
 
-  // 페이지를 /create-edit 경로로 리다이렉트하고 상태를 초기화
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+  }, []);
+
   const handleCreatePost = () => {
     if (onCreatePost) {
-      onCreatePost(); // 전달된 콜백 호출하여 페이지 상태 초기화
+      onCreatePost();
     }
-    navigate('/create-edit', { replace: true }); // 새로고침 없이 리다이렉트
+    navigate('/create-edit', { replace: true });
+  };
+
+  const handleNotificationClick = () => {
+    setShowModal(true); // 알림 아이콘 클릭 시 모달을 표시
   };
 
   return (
-    <nav style={styles.nav}>
-      <div style={styles.logo}>Trip Track</div>
-      <div style={styles.actions}>
-        {/* 알림 아이콘 */}
-        <FaBell style={styles.icon} />
+    <>
+      <nav style={styles.nav}>
+        <div style={styles.logo}>Trip Track</div>
+        <div style={styles.actions}>
+          {/* 알림 아이콘 */}
+          <FaBell style={styles.icon} onClick={handleNotificationClick} />
 
-        {/* Edit Profile 버튼 */}
-        <Link to="/edit-profile">
-          <button style={styles.button}>Edit Profile</button>
-        </Link>
+          {/* Edit Profile 버튼 */}
+          <Link to="/edit-profile">
+            <button style={styles.button}>Edit Profile</button>
+          </Link>
 
-        {/* Create Post 버튼 */}
-        <button style={styles.button} onClick={handleCreatePost}>
-          Create Post
-        </button>
+          {/* My Page 버튼 (동적으로 userId 사용) */}
+          {userId && (
+            <Link to={`/users/${userId}`}>
+              <button style={styles.button}>My Page</button>
+            </Link>
+          )}
 
-        {/* Sign Out 버튼 (기존의 handleSignOut 대신 SignOutButton 사용) */}
-        <SignOutButton /> {/* SignOutButton 컴포넌트를 그대로 사용 */}
-      </div>
-    </nav>
+          {/* Create Post 버튼 */}
+          <button style={styles.button} onClick={handleCreatePost}>
+            Create Post
+          </button>
+
+          {/* Sign Out 버튼 */}
+          <SignOutButton />
+        </div>
+      </nav>
+
+      {/* NotificationList 모달 */}
+      {showModal && <NotificationList setShowModal={setShowModal} />}
+    </>
   );
 };
 

@@ -1,0 +1,32 @@
+.post-view-page {
+    display: grid;
+    grid-template-areas: 
+        "title title"
+        "map content";
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr 1fr;
+    height: 100vh;
+}
+
+.post-header {
+    grid-area: title;
+}
+
+.post-map {
+    grid-area: map;
+    background-color: green;
+    padding-left: 2rem;
+    padding-right: 0.5rem;
+    width: 50vw;
+    height: 100%;
+    
+}
+
+.post-content {
+    grid-area: content;
+    /* background-color: red; */
+    padding-left: 0.5rem;
+    padding-right: 2rem;
+    width: 50vw;
+    height: 100%;
+}

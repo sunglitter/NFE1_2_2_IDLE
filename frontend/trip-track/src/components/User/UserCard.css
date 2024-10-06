@@ -1,0 +1,40 @@
+.user-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 좌우 정렬 */
+    background-color: #ffffff; /* 배경 색상 */
+    border: 1px solid #0066FF;
+    border-radius: 8px;
+    padding: 10px 20px;
+    width: 100%;
+  }
+  
+  .user-profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover; /* 이미지 커버 모드 */
+  }
+  
+  .user-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 12px;
+    color: #40587C;
+    flex-grow: 1; /* User 이름 영역이 유연하게 확장 */
+  }
+  
+  .follow-button {
+    width: 100px;
+    height: 40px;
+    background-color: #002050; /* 기본 배경 색상 */
+    color: #ffffff;
+    border: none;
+    border-radius: 8px; /* 둥근 버튼 */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .follow-button:hover {
+    background-color: #0074d9; /* hover 시 배경 색상 */
+  }

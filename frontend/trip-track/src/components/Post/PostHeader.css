@@ -1,0 +1,59 @@
+.post-header {
+    padding: 0.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: aquamarine;
+}
+
+.post-title {
+    font-size: 1.5rem;
+    padding: 0;
+}
+
+.post-labels,
+.author-buttons {
+    display: flex;
+    gap: 0 0.5rem;
+}
+
+.post-label {
+    border: 1px solid #002050;
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.post-button {
+    width: 5rem;
+    height: 3rem;
+    padding: 1rem;
+    background: none;
+}
+
+.post-button.edit,
+.post-button.share {
+    border: 1px solid #0066ff;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    color: #0066ff;
+}
+
+.post-button.edit:hover,
+.post-button.share:hover {
+    background-color: #0066ff;
+    color: #fff;
+}
+
+.post-button.delete {
+    border: 1px solid #ec221f;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    color: #ec221f;
+}
+
+.post-button.delete:hover {
+    background-color: #ec221f;
+    color: #fff;
+}
