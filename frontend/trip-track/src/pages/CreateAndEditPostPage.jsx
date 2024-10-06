@@ -341,7 +341,7 @@ const CreateAndEditPostPage = () => {
   const totalPages = Math.ceil(markers.length / itemsPerPage);
 
   return (
-    <div>
+    <div className='create-post-page'>
       {/* 상단 네비게이션 바 */}
       <HeaderAfterSignIn onCreatePost={handleCreatePost} onSignOut={handleSignOut} />
 
@@ -373,7 +373,7 @@ const CreateAndEditPostPage = () => {
 
       {/* 날짜 선택 UI와 Done 버튼 */}
       <div className='datepicker-and-options'>
-        <DatePicker 
+        <DatePicker
           className='datepicker start'
           selected={startDate} // 선택된 시작 날짜
           onChange={(date) => setStartDate(date)} // 시작 날짜 선택 시 상태 업데이트
@@ -404,6 +404,38 @@ const CreateAndEditPostPage = () => {
         >
           여행 요소
         </button>
+        {/* 선택된 항목 표시 및 초기화 */}
+        {selectedOptions.length > 0 && (
+          <div className='selected-options'>
+            <div className='selected-option'>
+              {selectedOptions.map((option) => (
+                <button
+                  key={option}
+                  // style={{
+                  //   padding: '10px',
+                  //   backgroundColor: 'black',
+                  //   color: 'white',
+                  //   borderRadius: '5px',
+                  //   cursor: 'pointer',
+                  //   display: 'flex',
+                  //   alignItems: 'center',
+                  // }}
+                  onClick={() => handleOptionClick(option)} // 옵션 클릭 시 해제 처리
+                >
+                  {option}
+                  <span
+                  // style={{ marginLeft: '5px', cursor: 'pointer' }}
+                  > ✕</span>
+                </button>
+              ))}
+            </div>
+            <button onClick={handleResetClick}
+            // style={{ padding: '5px 10px', backgroundColor: 'transparent', border: 'none' }}
+            >
+              <FaUndo className='option-undo' />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* 옵션 선택 창 */}
@@ -441,40 +473,7 @@ const CreateAndEditPostPage = () => {
         </div>
       )}
 
-      {/* 선택된 항목 표시 및 초기화 */}
-      {selectedOptions.length > 0 && (
-        <div>
-          <div
-          // style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}
-          >
-            {selectedOptions.map((option) => (
-              <div
-                key={option}
-                // style={{
-                //   padding: '10px',
-                //   backgroundColor: 'black',
-                //   color: 'white',
-                //   borderRadius: '5px',
-                //   cursor: 'pointer',
-                //   display: 'flex',
-                //   alignItems: 'center',
-                // }}
-                onClick={() => handleOptionClick(option)} // 옵션 클릭 시 해제 처리
-              >
-                {option}
-                <span
-                // style={{ marginLeft: '5px', cursor: 'pointer' }}
-                >✕</span>
-              </div>
-            ))}
-          </div>
-          <button onClick={handleResetClick}
-          // style={{ padding: '5px 10px', backgroundColor: 'transparent', border: 'none' }}
-          >
-            <FaUndo size={24} color="black" />
-          </button>
-        </div>
-      )}
+
 
       {/* 날짜별 버튼 생성 */}
       {dateRange.length > 0 && (
@@ -483,15 +482,7 @@ const CreateAndEditPostPage = () => {
             <button
               key={date}
               onClick={() => setSelectedDate(date)} // 클릭 시 해당 날짜 선택
-              className="date-button"
-            // style={{
-            //   padding: '10px',
-            //   backgroundColor: selectedDate === date ? 'black' : 'lightgrey',
-            //   color: selectedDate === date ? 'white' : 'black',
-            //   border: 'none',
-            //   borderRadius: '5px',
-            //   cursor: 'pointer',
-            // }}
+              className={`date-button ${selectedDate === date ? 'selected' : ''}`} // 선택된 날짜에 selected 클래스 추가
             >
               {new Date(date).toDateString()} {/* 날짜를 문자열 형식으로 표시 */}
             </button>
@@ -501,13 +492,9 @@ const CreateAndEditPostPage = () => {
 
       {/* 지도와 마커 관리 UI */}
       {selectedDate && (
-        <div
-        // style={{ display: 'flex', marginTop: '20px' }}
-        >
-          <div
-          // style={{ flex: 1, marginRight: '20px' }}
-          >
-            <h3>{selectedDate}</h3>
+        <div className='map-and-contents'>
+          <div>
+            {/* <h3>{selectedDate}</h3> */}
             <Map
               onAddLocation={(newLocation) => handleAddLocation(selectedDate, newLocation)} // 장소 추가 함수
               markers={markers} // 선택된 날짜의 마커들
@@ -519,10 +506,8 @@ const CreateAndEditPostPage = () => {
 
           {/* 선택된 마커가 있을 경우 콘텐츠 표시 */}
           {selectedMarker && (
-            <div
-            // style={{ flexBasis: '300px' }}
-            >
-              <Contents selectedMarker={selectedMarker} content={content} onSaveContent={handleSaveContent}
+            <div>
+              <Contents className='post-contents' selectedMarker={selectedMarker} content={content} onSaveContent={handleSaveContent}
               />
             </div>
           )}
@@ -531,42 +516,18 @@ const CreateAndEditPostPage = () => {
 
       {/* 마커가 있을 때만 페이지 넘기기 버튼을 렌더링 */}
       {markers.length > 0 && (
-        <div
-        // style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}
-        >
+        <div className='location-pagination'>
           {/* 이전 버튼 */}
           <button
             onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          // style={{
-          //   padding: '5px 10px',
-          //   fontSize: '12px',
-          //   marginRight: '5px',
-          //   backgroundColor: 'lightgray',
-          //   border: '1px solid gray',
-          //   borderRadius: '3px',
-          //   cursor: currentPage === 1 ? 'default' : 'pointer',
-          // }}
-          >
-            이전
-          </button>
+            disabled={currentPage === 1}>이전</button>
 
           {/* 페이지 번호 버튼 */}
           {[...Array(totalPages)].map((_, index) => (
             <button
               key={index}
               onClick={() => handlePageChange(index + 1)}
-            // style={{
-            //   padding: '5px 10px',
-            //   fontSize: '12px',
-            //   marginRight: '5px',
-            //   backgroundColor: currentPage === index + 1 ? 'black' : 'white',
-            //   color: currentPage === index + 1 ? 'white' : 'black',
-            //   border: '1px solid gray',
-            //   borderRadius: '3px',
-            //   cursor: 'pointer',
-            // }}
-            >
+              className={currentPage === index + 1 ? 'selected' : ''}>
               {index + 1}
             </button>
           ))}
@@ -574,19 +535,7 @@ const CreateAndEditPostPage = () => {
           {/* 다음 버튼 */}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          // style={{
-          //   padding: '5px 10px',
-          //   fontSize: '12px',
-          //   marginLeft: '5px',
-          //   backgroundColor: 'lightgray',
-          //   border: '1px solid gray',
-          //   borderRadius: '3px',
-          //   cursor: currentPage === totalPages ? 'default' : 'pointer',
-          // }}
-          >
-            다음
-          </button>
+            disabled={currentPage === totalPages}>다음</button>
         </div>
       )}
     </div>

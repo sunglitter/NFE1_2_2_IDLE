@@ -1,4 +1,4 @@
-.post-view-page {
+/* .post-view-page {
     display: grid;
     grid-template-areas: 
         "title title"
@@ -24,9 +24,8 @@
 
 .post-content {
     grid-area: content;
-    /* background-color: red; */
     padding-left: 0.5rem;
     padding-right: 2rem;
     width: 50vw;
     height: 100%;
-}
+} */

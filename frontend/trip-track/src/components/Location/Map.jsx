@@ -3,14 +3,17 @@ import { GoogleMap, LoadScript, Autocomplete, Marker, InfoWindow } from '@react-
 import PropTypes from 'prop-types'; // PropTypes로 props 검증
 import { DndProvider, useDrag, useDrop } from 'react-dnd'; // 드래그 앤 드롭 라이브러리
 import { HTML5Backend } from 'react-dnd-html5-backend'; // 드래그 앤 드롭 백엔드
+import './Map.css';
+import { RiDraggable } from "react-icons/ri";
 
 // 마커 드래그 앤 드롭 타입 정의
 const ItemType = 'MARKER';
 
 // 지도 컨테이너 스타일 정의
 const containerStyle = {
-  width: '100%',
+  width: 'calc(100% - 4rem)',
   height: '400px',
+  margin: '1rem 2rem'
 };
 
 // 지도 기본 위치 (샌프란시스코)
@@ -42,7 +45,7 @@ const DraggableMarker = ({ marker, index, moveMarker }) => {
   return (
     <div ref={(node) => ref(drop(node))} style={{ margin: '0 10px', textAlign: 'center', cursor: 'move' }}>
       <div>
-        <span style={{ fontSize: '24px', cursor: 'grab' }}>⚪</span> {/* 드래그 가능한 아이콘 */}
+        <span style={{ cursor: 'grab' }}><RiDraggable /> </span> {/* 드래그 가능한 아이콘 */}
         <strong>{marker.order}. {marker.info}</strong> {/* 마커의 순서와 정보를 표시 */}
       </div>
     </div>
@@ -171,7 +174,7 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
     // 마커 삭제 후 순서 재정렬
     setLocalMarkers((prevMarkers) => {
       const updatedMarkers = prevMarkers.filter((_, index) => index !== markerIndex);
-      
+
       // Recoil 상태 갱신
       onUpdateMarkers(updatedMarkers);
 
@@ -183,24 +186,24 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
     setSelectedMarker(null); // InfoWindow 닫기 위해 선택된 마커 초기화
   };
 
- // 마커 순서 변경 함수
-const moveMarker = (fromIndex, toIndex) => {
-  const updatedMarkers = [...localMarkers];
-  const [movedMarker] = updatedMarkers.splice(fromIndex, 1); // 드래그된 마커를 배열에서 제거
-  updatedMarkers.splice(toIndex, 0, movedMarker); // 새로운 위치에 삽입
+  // 마커 순서 변경 함수
+  const moveMarker = (fromIndex, toIndex) => {
+    const updatedMarkers = [...localMarkers];
+    const [movedMarker] = updatedMarkers.splice(fromIndex, 1); // 드래그된 마커를 배열에서 제거
+    updatedMarkers.splice(toIndex, 0, movedMarker); // 새로운 위치에 삽입
 
-  // 마커 순서 재설정
-  const reorderedMarkers = updatedMarkers.map((marker, index) => ({
-    ...marker,
-    order: index + 1, // 순서 업데이트
-  }));
+    // 마커 순서 재설정
+    const reorderedMarkers = updatedMarkers.map((marker, index) => ({
+      ...marker,
+      order: index + 1, // 순서 업데이트
+    }));
 
-  // `mapsData`에 업데이트된 순서 저장
-  onUpdateMarkers(reorderedMarkers); // 이 함수가 `mapsData` 상태를 업데이트함
+    // `mapsData`에 업데이트된 순서 저장
+    onUpdateMarkers(reorderedMarkers); // 이 함수가 `mapsData` 상태를 업데이트함
 
-  // `localMarkers`에도 업데이트된 순서 반영
-  setLocalMarkers(reorderedMarkers);
-};
+    // `localMarkers`에도 업데이트된 순서 반영
+    setLocalMarkers(reorderedMarkers);
+  };
 
   // 동일한 위치에 있는 마커들을 관리하는 함수
   const getMarkersAtSamePosition = (lat, lng) => {
@@ -208,17 +211,18 @@ const moveMarker = (fromIndex, toIndex) => {
   };
 
   return (
-    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
-      <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+    <LoadScript className='map-container' googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={libraries}>
+      <Autocomplete className='map-search' onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
         <input
           type="text"
           placeholder="장소 검색"
-          style={{ width: '300px', height: '40px', marginBottom: '10px' }}
+          className='map-search'
         />
       </Autocomplete>
 
       {/* GoogleMap 컴포넌트 */}
       <GoogleMap
+        className='map-google'
         mapContainerStyle={containerStyle}
         center={center}
         zoom={10}
@@ -246,14 +250,14 @@ const moveMarker = (fromIndex, toIndex) => {
               <h4>방문 기록</h4>
               {/* 동일한 위치에 있는 마커들 표시 */}
               {getMarkersAtSamePosition(selectedMarker.lat, selectedMarker.lng).map((marker, idx) => (
-                 <div 
-                 key={idx} 
-                 style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px', cursor: 'pointer' }}
-                 onClick={() => {
-                   console.log(`Clicked marker with order: ${marker.order}`);
-                   onMarkerClick(marker); // 클릭 시 해당 마커의 콘텐츠 로드
-                 }}
-               >
+                <div
+                  key={idx}
+                  style={{ marginBottom: '15px', borderBottom: '1px solid #ddd', paddingBottom: '10px', cursor: 'pointer' }}
+                  onClick={() => {
+                    console.log(`Clicked marker with order: ${marker.order}`);
+                    onMarkerClick(marker); // 클릭 시 해당 마커의 콘텐츠 로드
+                  }}
+                >
                   <p>
                     <strong>방문 순서: {marker.order}</strong>
                   </p>
@@ -272,13 +276,14 @@ const moveMarker = (fromIndex, toIndex) => {
       </GoogleMap>
 
       {/* 타임라인 UI (드래그 앤 드롭으로 마커 순서 변경 가능) */}
-      <div style={{ marginTop: '20px', padding: '10px' }}>
+      <div className='route-timeline'>
         <h3>경로 타임라인</h3>
-        <DndProvider backend={HTML5Backend}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+        <DndProvider backend={HTML5Backend} >
+          <div className="route-lists">
             {localMarkers.map((marker, index) => (
               <DraggableMarker key={index} marker={marker} index={index} moveMarker={moveMarker} />
             ))}
+
           </div>
         </DndProvider>
       </div>

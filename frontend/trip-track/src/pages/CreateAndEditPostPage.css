@@ -1,8 +1,12 @@
+.create-post-page {
+    max-width: 100vw;
+}
+
 .create-post-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem 2rem;
+    padding: 0 2rem 1rem 2rem;
 }
 
 .create-post-header input {
@@ -39,8 +43,8 @@
     background-color: #fff;
     position: absolute;
     z-index: 1000;
-    left: 50%;
-    top: 9.75rem;
+    left: 35.25%;
+    top: 17%;
     padding: 0.5rem 1rem;
 }
 
@@ -53,4 +57,74 @@
     margin-left: 0;
     margin-right: 0.5rem;
     margin-bottom: 1rem;
+}
+
+.selected-options {
+    display: flex;
+    align-items: center;
+}
+
+.option-undo {
+    font-size: 0.75rem;
+    padding: 0;
+}
+
+.parent-container {
+    margin-top: 1rem;
+    padding: 0 2rem;
+}
+
+.parent-container button {
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+.date-button {
+    padding: 10px;
+    background-color: #fff;
+    color: #0066ff;
+    border: 1px solid #0066ff;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    /* 버튼 사이에 간격 추가 */
+}
+
+.date-button.selected {
+    background-color: #002050;
+    color: white;
+    border: none;
+}
+
+.location-pagination {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.location-pagination button.selected {
+    background-color: #0060ff; /* 진한 배경색 */
+    color: white; /* 흰 글자색 */
+    font-weight: bold; /* 글자 진하게 */
+}
+
+.location-pagination button {
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: pointer;
+}
+
+.location-pagination button:hover {
+    background-color: #ddd;
+}
+
+.location-pagination button:disabled {
+    background-color: #eee;
+    color: #aaa;
+    cursor: not-allowed;
 }
