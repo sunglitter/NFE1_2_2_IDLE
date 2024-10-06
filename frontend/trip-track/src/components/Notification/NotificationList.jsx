@@ -4,10 +4,7 @@ import { getNotifications, markNotificationAsSeen } from "../../services/notific
 import { formatTimeAgo } from "../../utils/formatDate";
 import { useNavigate } from "react-router-dom";
 import './NotificationList.css';
-<<<<<<< HEAD
-=======
 import { IoMdClose } from "react-icons/io";
->>>>>>> origin/feature/design
 
 const NotificationList = ({ setShowModal }) => {
   const [notifications, setNotifications] = useState([]);
