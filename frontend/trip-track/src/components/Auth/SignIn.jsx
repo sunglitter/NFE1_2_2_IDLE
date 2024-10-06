@@ -33,7 +33,7 @@ const SignIn = () => {
       console.log("Token:", token); // token 값을 콘솔에 출력
       localStorage.setItem("token", token); // 토큰 저장
       localStorage.setItem("userId", user._id)
-      navigate("/main"); // 로그인 후 메인 페이지로 이동
+      navigate("/"); // 로그인 후 메인 페이지로 이동
     } catch (err) {
       setError("로그인 중 오류가 발생했습니다.");
       console.log("에러메세지", err.message);
