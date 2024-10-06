@@ -30,26 +30,31 @@ const HeaderAfterSignIn = ({ onCreatePost }) => {
 
   return (
     <>
-      <nav style={styles.nav}>
-        <div style={styles.logo}>Trip Track</div>
-        <div style={styles.actions}>
+      <nav>
+        <div>Trip Track</div>
+        <div >
           {/* 알림 아이콘 */}
-          <FaBell style={styles.icon} onClick={handleNotificationClick} />
+          <FaBell onClick={handleNotificationClick} />
 
           {/* Edit Profile 버튼 */}
           <Link to="/edit-profile">
-            <button style={styles.button}>Edit Profile</button>
+            <button>Edit Profile</button>
           </Link>
 
           {/* My Page 버튼 (동적으로 userId 사용) */}
           {userId && (
+<<<<<<< HEAD
             <Link to={`/my-page/${userId}`}>
               <button style={styles.button}>My Page</button>
+=======
+            <Link to={`/users/${userId}`}>
+              <button>My Page</button>
+>>>>>>> 757c10b58ca3806f8592eaeb4eebf042047a5c0e
             </Link>
           )}
 
           {/* Create Post 버튼 */}
-          <button style={styles.button} onClick={handleCreatePost}>
+          <button onClick={handleCreatePost}>
             Create Post
           </button>
 
@@ -64,37 +69,6 @@ const HeaderAfterSignIn = ({ onCreatePost }) => {
   );
 };
 
-const styles = {
-  nav: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 20px',
-    backgroundColor: '#fff',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-  },
-  actions: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: '24px',
-    marginRight: '20px',
-    cursor: 'pointer',
-  },
-  button: {
-    marginLeft: '10px',
-    padding: '5px 15px',
-    backgroundColor: '#fff',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-};
 
 HeaderAfterSignIn.propTypes = {
   onCreatePost: PropTypes.func.isRequired, // 필수 함수 prop
