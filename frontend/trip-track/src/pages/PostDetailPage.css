@@ -29,3 +29,31 @@
     width: 50vw;
     height: 100%;
 } */
+
+.navigation-buttons button,
+.place-navigation button{
+    margin-left: 0;
+}
+
+.navigation-buttons,
+.place-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.location-order {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #0066ff;
+    left: 2rem;
+    top: 110vh;
+    width: calc(100% - 4rem);
+    
+    padding: 1rem 2rem;
+}
+
+.loca-info {
+    padding: 1rem 2rem;
+}

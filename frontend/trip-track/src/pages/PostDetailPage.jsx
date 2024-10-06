@@ -5,6 +5,8 @@ import PostHeader from '../components/Post/PostHeader.jsx';
 import PostContent from '../components/Post/PostContent.jsx';
 import Map from '../components/Location/Map'; // 지도 컴포넌트 가져오기
 import { useParams } from 'react-router-dom';
+import HeaderAfterSignIn from '../components/Common/HeaderAfterSignIn.jsx';
+import HeaderBeforeSignIn from '../components/Common/HeaderBeforeSignIn.jsx';
 
 const PostDetailPage = () => {
   const { postId } = useParams();
@@ -125,6 +127,7 @@ const PostDetailPage = () => {
 
   return (
     <div>
+      {isLoggedIn ? <HeaderAfterSignIn /> : <HeaderBeforeSignIn />}
       {user && (
         <PostHeader
           post={{
@@ -167,16 +170,18 @@ const PostDetailPage = () => {
         <Map markers={markers} selectedLocation={selectedLocation} />
       </div>
 
-       {/* 선택된 장소 정보 및 방문 순서 표시 */}
-       {currentLocation && (
-        <div>
+      {/* 선택된 장소 정보 및 방문 순서 표시 */}
+      {currentLocation && (
+        <div className='location-order'>
           <p>방문한 장소: {currentLocation.name}</p>
           <p>방문 순서: {currentLocation.visitedOrder}</p> {/* 방문 순서 표시 */}
         </div>
       )}
 
       {/* 선택된 장소 정보 표시 */}
-      {currentLocation && <PostContent location={currentLocation} postId={post._id} />}
+      <div className="loca-info">
+      {currentLocation && <PostContent  location={currentLocation} postId={post._id} />}
+      </div>
     </div>
   );
 };
