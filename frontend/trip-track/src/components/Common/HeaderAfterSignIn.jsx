@@ -1,11 +1,10 @@
 import { FaBell } from 'react-icons/fa';
 import { useNavigate, Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import SignOutButton from '../Auth/SignOutButton';
 import { useEffect, useState } from 'react';
 import NotificationList from '../Notification/NotificationList'; // NotificationList 컴포넌트 가져오기
 
-const HeaderAfterSignIn = ({ onCreatePost }) => {
+const HeaderAfterSignIn = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState(null);
   const [showModal, setShowModal] = useState(false); // 모달 상태 추가
@@ -18,9 +17,6 @@ const HeaderAfterSignIn = ({ onCreatePost }) => {
   }, []);
 
   const handleCreatePost = () => {
-    if (onCreatePost) {
-      onCreatePost();
-    }
     navigate('/create-edit', { replace: true });
   };
 
@@ -62,11 +58,6 @@ const HeaderAfterSignIn = ({ onCreatePost }) => {
       {showModal && <NotificationList setShowModal={setShowModal} />}
     </>
   );
-};
-
-
-HeaderAfterSignIn.propTypes = {
-  onCreatePost: PropTypes.func.isRequired, // 필수 함수 prop
 };
 
 export default HeaderAfterSignIn;
