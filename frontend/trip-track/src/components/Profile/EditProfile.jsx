@@ -3,6 +3,7 @@ import api from "../../utils/authApi.js";
 import { useNavigate } from "react-router-dom";
 import "./EditProfile.css";
 import axios from "axios";
+import HeaderAfterSignIn from "../Common/HeaderAfterSignIn.jsx";
 
 // 기본 프로필 이미지 URL
 const defaultProfileImage = "https://via.placeholder.com/150";
@@ -30,9 +31,9 @@ const EditProfile = () => {
         const userData = response.data;
         setFullName(userData.fullName || "");
         console.log(fullName);
-        setEmail(userData.email || ""); 
+        setEmail(userData.email || "");
         console.log(email);
-        setImage(userData.image || defaultProfileImage); 
+        setImage(userData.image || defaultProfileImage);
         console.log(image);
       } catch (error) {
         setError("사용자 정보를 불러오는 데 오류가 발생했습니다.");
@@ -138,7 +139,10 @@ const EditProfile = () => {
 
   return (
     <div className="edit-profile">
-      <div className="profile-container">
+      <div className="header-after-signin">
+        <HeaderAfterSignIn />
+      </div>
+
         <div className="left-container">
           <div className="profile-image-container">
             <img src={image} alt="Profile" className="profile-image" />
@@ -152,7 +156,7 @@ const EditProfile = () => {
           {message && <p className="message">{message}</p>}
           <form onSubmit={handleSubmit}>
             <div>
-              <p>프로필 수정</p>
+              <h3>프로필 수정</h3>
               <input
                 type="text"
                 value={fullName} // fullName 값이 없으면 빈 문자열로 설정
@@ -184,7 +188,7 @@ const EditProfile = () => {
             </button>
           </form>
         </div>
-      </div>
+
     </div>
   );
 };

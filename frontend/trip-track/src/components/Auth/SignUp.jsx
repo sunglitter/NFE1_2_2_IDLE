@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
 import "./SignUp.css";
 import api from "../../utils/authApi.js";
+import HeaderBeforeSignIn from "../Common/HeaderBeforeSignIn.jsx";
 
 const SignUp = () => {
   const [fullName, setFullName] = useState("");
@@ -80,6 +81,7 @@ const SignUp = () => {
 
   return (
     <div className="page-container">
+      <HeaderBeforeSignIn />
       <div className="logo">
         <img src={Logo} alt="Logo" />
       </div>
