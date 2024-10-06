@@ -127,6 +127,7 @@ const PostDetailPage = () => {
 
   return (
     <div>
+      {isLoggedIn ? <HeaderAfterSignIn /> : <HeaderBeforeSignIn />}
       {/* 포스트 헤더 */}
       {post && (
         <PostHeader
