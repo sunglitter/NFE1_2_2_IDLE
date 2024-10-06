@@ -26,12 +26,13 @@ const App = () => {
           <Route path="/signup" element={<SignUpPage />} />
           <Route path='/edit-post/:postId' element={<PostDetailPage />} />
           <Route path='/edit-profile' element={<EditProfilePage />} />
+          <Route path="/my-page/:userId" element={<UserProfilePage />} />
           <Route path="/search-results" element={<SearchResultsPage />} />
           <Route path="/search-users" element={<SearchUserResultsPage />} />
 
           {/* PrivateRoute로 UserProfilePage를 보호 */}
           <Route 
-            path="/my-page/:userId" 
+            path="/users/:userId" 
             element={
               <PrivateRoute>
                 <UserProfilePage />

@@ -6,8 +6,8 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { currentUserState } from "../recoil/atom";
 import { getUser, followUser, unfollowUser } from "../services/authService";
 import UserProfile from '../components/Profile/UserProfile';
-import PostHeader from "../components/Common/PostHeader";
-import PostList from "../components/Post/PostList";
+import PostHeaders from "../components/Post/PostHeaders";
+import PostLists from "../components/Post/PostLists";
 import FollowListModal from "../components/Common/FollowListModal";
 
 const UserProfilePage = () => {
@@ -115,13 +115,13 @@ const UserProfilePage = () => {
             isLoggedIn={!!currentUser}
             setModalActiveTab={setModalActiveTab} // setModalActiveTab 전달
           />
-          <PostHeader
+          <PostHeaders
             isCurrentUser={currentUser ? currentUser._id === userId : false}
             onFilterChange={handleFilterChange}
             activeTab={activeTab}
             onSearch={handleSearch}
           />
-          <PostList
+          <PostLists
             userId={userId}
             filter={activeTab}
             searchQuery={searchQuery}
