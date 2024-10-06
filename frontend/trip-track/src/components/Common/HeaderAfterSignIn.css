@@ -1,0 +1,22 @@
+.header-buttons {
+    display: flex;
+}
+
+.icon-noti {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #0066ff;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
+    color: #0066ff !important;
+}
+
+
+#fa-noti {
+    color: #0066ff !important;
+}
+

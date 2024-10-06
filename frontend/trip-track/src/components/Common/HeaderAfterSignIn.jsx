@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import SignOutButton from '../Auth/SignOutButton';
 import { useEffect, useState } from 'react';
 import NotificationList from '../Notification/NotificationList'; // NotificationList 컴포넌트 가져오기
+import './HeaderAfterSignIn.css';
 
 const HeaderAfterSignIn = () => {
   const navigate = useNavigate();
@@ -27,10 +28,12 @@ const HeaderAfterSignIn = () => {
   return (
     <>
       <nav>
-        <div>Trip Track</div>
-        <div >
+        <h1>Trip Track</h1>
+        <div className='header-buttons' >
           {/* 알림 아이콘 */}
-          <FaBell onClick={handleNotificationClick} />
+          <div className="icon-noti">
+            <FaBell  id='fa-noti' onClick={handleNotificationClick} />
+          </div>
 
           {/* Edit Profile 버튼 */}
           <Link to="/edit-profile">
