@@ -48,12 +48,12 @@
     background-color: #fff;
     border: 1px solid #0066ff;
     left: 2rem;
-    top: 100vh;
+    top: 109vh;
     width: calc(100% - 4rem);
-    
+    height: 8rem;
     padding: 1rem 2rem;
 }
 
 .loca-info {
-    padding: 1rem 2rem;
+    padding: 4rem 2rem;
 }
