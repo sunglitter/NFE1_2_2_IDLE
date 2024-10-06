@@ -8,7 +8,7 @@ import { mapsDataState } from '../recoil/mapsState.js'; // 지도 데이터에 �
 import HeaderAfterSignIn from '../components/Common/HeaderAfterSignIn.jsx';
 import { FaUndo } from 'react-icons/fa'; // 아이콘 라이브러리 (초기화 아이콘)
 import { createPost } from '../utils/postApi.js'; // 포스트 생성 및 수정 API 가져오기
-
+import './CreateAndEditPostPage.css';
 import { useNavigate } from 'react-router-dom';
 
 // 포스트 생성 및 수정 페이지 컴포넌트
@@ -52,7 +52,7 @@ const CreateAndEditPostPage = () => {
     console.log('현재 selectedMarker:', selectedMarker);
     console.log('현재 content 상태:', content);
   }, [selectedDate, selectedMarker, content]);
-  
+
   useEffect(() => {
     // 선택된 날짜가 변경될 때 마커 순서를 다시 설정
     if (selectedDate && mapsData[selectedDate]?.length > 0) {
@@ -66,7 +66,7 @@ const CreateAndEditPostPage = () => {
       setMarkers([]); // 마커가 없을 경우 초기화
     }
   }, [selectedDate, mapsData]);
-  
+
   useEffect(() => {
     // 선택된 날짜가 변경되면 모든 상태 초기화
     if (selectedDate && Array.isArray(mapsData[selectedDate])) {
@@ -79,7 +79,7 @@ const CreateAndEditPostPage = () => {
       setContent({ title: '', text: '', images: [] }); // 콘텐츠 초기화
     }
   }, [selectedDate, mapsData]);
-  
+
   // selectedMarker가 변경될 때마다 콘텐츠를 로드
   useEffect(() => {
     if (selectedMarker && selectedDate) {
@@ -100,98 +100,98 @@ const CreateAndEditPostPage = () => {
     }
   }, [selectedMarker, selectedDate, mapsData]);
 
-    // 포스트 제목 입력 핸들러
-    const handleTitleChange = (e) => {
-      setPostTitle(e.target.value);
-    };
+  // 포스트 제목 입력 핸들러
+  const handleTitleChange = (e) => {
+    setPostTitle(e.target.value);
+  };
 
 
   // 저장 버튼 클릭 핸들러
   const handleSave = async () => {
-     // 1. 기본 입력 항목 검증 (제목, 날짜, 지도 데이터)
-  if (!postTitle || !startDate || !endDate || !Object.keys(mapsData).length) {
-    alert('필수 입력 항목이 누락되었습니다.');
-    return;
-  }
+    // 1. 기본 입력 항목 검증 (제목, 날짜, 지도 데이터)
+    if (!postTitle || !startDate || !endDate || !Object.keys(mapsData).length) {
+      alert('필수 입력 항목이 누락되었습니다.');
+      return;
+    }
 
-  // 선택된 항목들에서 각각의 카테고리별로 값을 가져오기 위한 함수
-const getCategoryValue = (categoryName) => {
-  const categoryOptions = categories[categoryName];
-  const selectedOption = selectedOptions.find(option => categoryOptions.includes(option));
-  return selectedOption || '기타'; // 해당 카테고리에서 선택된 옵션이 없으면 '기타' 반환
-};
+    // 선택된 항목들에서 각각의 카테고리별로 값을 가져오기 위한 함수
+    const getCategoryValue = (categoryName) => {
+      const categoryOptions = categories[categoryName];
+      const selectedOption = selectedOptions.find(option => categoryOptions.includes(option));
+      return selectedOption || '기타'; // 해당 카테고리에서 선택된 옵션이 없으면 '기타' 반환
+    };
 
-  // 2. 각 날짜별로 적어도 하나 이상의 장소에 사진 또는 글이 입력되었는지 확인
-  const hasContent = Object.values(mapsData).some((locations = []) =>
-    locations.some(location => {
-      const description = location?.content?.text?.trim() || ''; // description이 undefined일 경우 빈 문자열
-      const photos = location?.content?.images || []; // photos가 undefined일 경우 빈 배열로 설정
-      return (description !== '') || photos.length > 0;
-    })
-  );
-  
+    // 2. 각 날짜별로 적어도 하나 이상의 장소에 사진 또는 글이 입력되었는지 확인
+    const hasContent = Object.values(mapsData).some((locations = []) =>
+      locations.some(location => {
+        const description = location?.content?.text?.trim() || ''; // description이 undefined일 경우 빈 문자열
+        const photos = location?.content?.images || []; // photos가 undefined일 경우 빈 배열로 설정
+        return (description !== '') || photos.length > 0;
+      })
+    );
 
-  if (!hasContent) {
-    alert('적어도 하나 이상의 날짜에 사진 또는 글이 포함되어야 합니다.');
-    return;
-  }
 
-  // 가장 빠른 날짜의 가장 순서가 빠른 장소의 첫 번째 이미지를 썸네일로 선택하는 로직
-  let thumbnailImage = null;
+    if (!hasContent) {
+      alert('적어도 하나 이상의 날짜에 사진 또는 글이 포함되어야 합니다.');
+      return;
+    }
 
-  Object.keys(mapsData).sort().some(date => {
-    const locations = mapsData[date];
-    return locations.some(location => {
-      if (location.content.images && location.content.images.length > 0) {
-        thumbnailImage = location.content.images[0];
-        return true;
-      }
-      return false;
+    // 가장 빠른 날짜의 가장 순서가 빠른 장소의 첫 번째 이미지를 썸네일로 선택하는 로직
+    let thumbnailImage = null;
+
+    Object.keys(mapsData).sort().some(date => {
+      const locations = mapsData[date];
+      return locations.some(location => {
+        if (location.content.images && location.content.images.length > 0) {
+          thumbnailImage = location.content.images[0];
+          return true;
+        }
+        return false;
+      });
     });
-  });
 
- // 포스트 데이터를 생성
- const postData = {
-  title: {
-    title: postTitle,
-    dates: [startDate.toISOString(), endDate.toISOString()],
-    dailyLocations: Object.keys(mapsData).map(date => ({
-      date,
-      locations: mapsData[date].map(marker => ({
-        subtitle: marker.content.title, // 소제목
-        name: marker.info, // 장소 이름
-        lat: marker.lat,   // 위도
-        lng: marker.lng,   // 경도
-        description: marker.content.text || '', // 장소 설명
-        photos: marker.content.images || [],  // 사진
-        visitedOrder: marker.order  // 방문 순서
-      }))
-    })),
-    tripPurpose: getCategoryValue('목적'), // 선택된 목적 옵션
-    tripGroupType: getCategoryValue('인원'), // 선택된 인원 옵션
-    season: getCategoryValue('계절'), // 선택된 계절 옵션
-  },
-  channelId: '66ff441851e9a379d07c0c08', // 실제 채널 ID를 입력
-  image: thumbnailImage || null // 선택된 썸네일 이미지 또는 null
-};
+    // 포스트 데이터를 생성
+    const postData = {
+      title: {
+        title: postTitle,
+        dates: [startDate.toISOString(), endDate.toISOString()],
+        dailyLocations: Object.keys(mapsData).map(date => ({
+          date,
+          locations: mapsData[date].map(marker => ({
+            subtitle: marker.content.title, // 소제목
+            name: marker.info, // 장소 이름
+            lat: marker.lat,   // 위도
+            lng: marker.lng,   // 경도
+            description: marker.content.text || '', // 장소 설명
+            photos: marker.content.images || [],  // 사진
+            visitedOrder: marker.order  // 방문 순서
+          }))
+        })),
+        tripPurpose: getCategoryValue('목적'), // 선택된 목적 옵션
+        tripGroupType: getCategoryValue('인원'), // 선택된 인원 옵션
+        season: getCategoryValue('계절'), // 선택된 계절 옵션
+      },
+      channelId: '66ff441851e9a379d07c0c08', // 실제 채널 ID를 입력
+      image: thumbnailImage || null // 선택된 썸네일 이미지 또는 null
+    };
 
-  try {
-    const result = await createPost(postData);
-    alert('포스트가 성공적으로 저장되었습니다!');
-    navigate(`/posts/${result._id}`);
-  } catch (error) {
-    alert(`포스트 저장에 실패했습니다: ${error.message}`);
-  }
+    try {
+      const result = await createPost(postData);
+      alert('포스트가 성공적으로 저장되었습니다!');
+      navigate(`/posts/${result._id}`);
+    } catch (error) {
+      alert(`포스트 저장에 실패했습니다: ${error.message}`);
+    }
   };
 
-     // 나가기 버튼 클릭 핸들러
+  // 나가기 버튼 클릭 핸들러
   const handleExit = () => {
-   
+
     // 메인 페이지로 이동
     navigate('/main');
   };
 
-   // 페이지 상태를 초기화하는 함수
+  // 페이지 상태를 초기화하는 함수
   const resetPage = () => {
     setStartDate(null);
     setEndDate(null);
@@ -261,12 +261,12 @@ const getCategoryValue = (categoryName) => {
     setMapsData((prevMapsData) => {
       const updatedMarkersForDate = prevMapsData[date] || [];
       const newOrder = updatedMarkersForDate.length + 1; // 해당 날짜에 맞는 순서 계산
-  
+
       const updatedData = {
         ...prevMapsData,
         [date]: [...updatedMarkersForDate, { ...newLocation, order: newOrder, content: { text: '', image: null } }],
       };
-      
+
       return updatedData;
     });
   };
@@ -282,42 +282,42 @@ const getCategoryValue = (categoryName) => {
     });
   };
 
- // 마커 클릭 시 호출되는 함수
-const handleMarkerClick = useCallback((marker) => {
-  if (selectedDate) {
-    const currentMarkers = mapsData[selectedDate];
+  // 마커 클릭 시 호출되는 함수
+  const handleMarkerClick = useCallback((marker) => {
+    if (selectedDate) {
+      const currentMarkers = mapsData[selectedDate];
 
-    if (currentMarkers && Array.isArray(currentMarkers)) {
-      const foundMarker = currentMarkers.find(
-        m => m.lat === marker.lat && m.lng === marker.lng && m.order === marker.order // 마커의 order 값을 기준으로 찾음
-      );
+      if (currentMarkers && Array.isArray(currentMarkers)) {
+        const foundMarker = currentMarkers.find(
+          m => m.lat === marker.lat && m.lng === marker.lng && m.order === marker.order // 마커의 order 값을 기준으로 찾음
+        );
 
-      if (foundMarker) {
-        console.log('Found marker:', foundMarker);
-        setSelectedMarker(foundMarker); // 선택된 마커를 업데이트
-        
-        // 해당 마커의 order를 기반으로 페이지 설정
-        setCurrentPage(foundMarker.order); // 현재 페이지를 마커의 순서에 맞게 설정
+        if (foundMarker) {
+          console.log('Found marker:', foundMarker);
+          setSelectedMarker(foundMarker); // 선택된 마커를 업데이트
+
+          // 해당 마커의 order를 기반으로 페이지 설정
+          setCurrentPage(foundMarker.order); // 현재 페이지를 마커의 순서에 맞게 설정
+        }
       }
     }
-  }
-}, [selectedDate, mapsData]);
-  
- // 마커에 대한 콘텐츠 저장 함수
-const handleSaveContent = (newContent) => {
-  if (!selectedMarker) return;
+  }, [selectedDate, mapsData]);
 
-  setMapsData((prevMapsData) => {
-    const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
-      marker.order === selectedMarker.order ? { ...marker, content: newContent } : marker // 마커의 content를 newContent로 업데이트
-    );
+  // 마커에 대한 콘텐츠 저장 함수
+  const handleSaveContent = (newContent) => {
+    if (!selectedMarker) return;
 
-    return {
-      ...prevMapsData,
-      [selectedDate]: updatedMarkers, // 선택된 날짜에 대한 마커 업데이트
-    };
-  });
-};
+    setMapsData((prevMapsData) => {
+      const updatedMarkers = prevMapsData[selectedDate].map((marker) =>
+        marker.order === selectedMarker.order ? { ...marker, content: newContent } : marker // 마커의 content를 newContent로 업데이트
+      );
+
+      return {
+        ...prevMapsData,
+        [selectedDate]: updatedMarkers, // 선택된 날짜에 대한 마커 업데이트
+      };
+    });
+  };
 
   // 여행 요소 선택 토글 (옵션 창 열기/닫기)
   const toggleOptions = () => {
@@ -342,58 +342,39 @@ const handleSaveContent = (newContent) => {
 
   return (
     <div>
-      <h2>Create or Edit Post</h2>
-       {/* 상단 네비게이션 바 */}
-       <HeaderAfterSignIn onCreatePost={handleCreatePost} onSignOut={handleSignOut} />
+      {/* 상단 네비게이션 바 */}
+      <HeaderAfterSignIn onCreatePost={handleCreatePost} onSignOut={handleSignOut} />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+      <div className="create-post-header">
+        <input
+          type="text"
+          value={postTitle}
+          onChange={handleTitleChange}
+          placeholder="포스트 제목을 입력하세요"
+        />
 
-      <input
-        type="text"
-        value={postTitle}
-        onChange={handleTitleChange}
-        placeholder="포스트 제목을 입력하세요"
-        style={{
-          width: '100%',
-          padding: '10px',
-          fontSize: '16px',
-          marginBottom: '20px',
-        }}
-      />
-        {/* 나가기 버튼 */}
-        <button
-          onClick={handleExit}
-          style={{
-            backgroundColor: 'red',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          나가기
-        </button>
+        <div className="create-post-buttons">
+          {/* 나가기 버튼 */}
+          <button
+            onClick={handleExit}
+          >
+            나가기
+          </button>
 
-        {/* 저장 버튼 */}
-        <button
-          onClick={handleSave}
-          style={{
-            backgroundColor: 'black',
-            color: 'white',
-            padding: '10px 20px',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          저장
-        </button>
+          {/* 저장 버튼 */}
+          <button
+            onClick={handleSave}
+          >
+            저장
+          </button>
+        </div>
       </div>
 
+
       {/* 날짜 선택 UI와 Done 버튼 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-        <DatePicker
+      <div className='datepicker-and-options'>
+        <DatePicker 
+          className='datepicker start'
           selected={startDate} // 선택된 시작 날짜
           onChange={(date) => setStartDate(date)} // 시작 날짜 선택 시 상태 업데이트
           selectsStart
@@ -403,6 +384,7 @@ const handleSaveContent = (newContent) => {
           placeholderText="여행 시작일"
         />
         <DatePicker
+          className='datepicker finish'
           selected={endDate} // 선택된 종료 날짜
           onChange={(date) => setEndDate(date)} // 종료 날짜 선택 시 상태 업데이트
           selectsEnd
@@ -411,34 +393,42 @@ const handleSaveContent = (newContent) => {
           dateFormat="yyyy-MM-dd"
           placeholderText="여행 종료일"
         />
-        <button onClick={handleDoneClick} style={{ padding: '5px 10px' }}>
-          Done
+        <button onClick={handleDoneClick}
+        //  style={{ padding: '5px 10px' }}
+        >
+          여행 기간 선택 완료
         </button>
         {/* 여행 요소 선택 버튼 */}
-        <button onClick={toggleOptions} style={{ padding: '5px 10px' }}>
+        <button onClick={toggleOptions}
+        // style={{ padding: '5px 10px' }}
+        >
           여행 요소
         </button>
       </div>
 
       {/* 옵션 선택 창 */}
       {isOptionsOpen && (
-        <div style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '5px' }}>
+        <div className='options'
+        // style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f0f0f0', borderRadius: '5px' }}
+        >
           {Object.keys(categories).map((category) => (
-            <div key={category} style={{ marginBottom: '10px' }}>
-              <h5>{category}</h5>
-              <div style={{ display: 'flex', gap: '10px' }}>
+            <div key={category}
+            // style={{ marginBottom: '10px' }}
+            >
+              <h5 className='cat-title'>{category}</h5>
+              <div className='cats'>
                 {categories[category].map((option) => (
                   <button
                     key={option}
                     onClick={() => handleOptionClick(option)}
-                    style={{
-                      padding: '5px 10px',
-                      backgroundColor: selectedOptions.includes(option) ? 'black' : 'lightgrey',
-                      color: selectedOptions.includes(option) ? 'white' : 'black',
-                      border: 'none',
-                      borderRadius: '5px',
-                      cursor: 'pointer',
-                    }}
+                  // style={{
+                  //   padding: '5px 10px',
+                  //   backgroundColor: selectedOptions.includes(option) ? 'black' : 'lightgrey',
+                  //   color: selectedOptions.includes(option) ? 'white' : 'black',
+                  //   border: 'none',
+                  //   borderRadius: '5px',
+                  //   cursor: 'pointer',
+                  // }}
                   >
                     {option}
                   </button>
@@ -446,33 +436,41 @@ const handleSaveContent = (newContent) => {
               </div>
             </div>
           ))}
+
+
         </div>
       )}
 
       {/* 선택된 항목 표시 및 초기화 */}
       {selectedOptions.length > 0 && (
-        <div style={{ marginBottom: '10px' }}>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        <div>
+          <div
+          // style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}
+          >
             {selectedOptions.map((option) => (
               <div
                 key={option}
-                style={{
-                  padding: '10px',
-                  backgroundColor: 'black',
-                  color: 'white',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
+                // style={{
+                //   padding: '10px',
+                //   backgroundColor: 'black',
+                //   color: 'white',
+                //   borderRadius: '5px',
+                //   cursor: 'pointer',
+                //   display: 'flex',
+                //   alignItems: 'center',
+                // }}
                 onClick={() => handleOptionClick(option)} // 옵션 클릭 시 해제 처리
               >
                 {option}
-                <span style={{ marginLeft: '5px', cursor: 'pointer' }}>✕</span>
+                <span
+                // style={{ marginLeft: '5px', cursor: 'pointer' }}
+                >✕</span>
               </div>
             ))}
           </div>
-          <button onClick={handleResetClick} style={{ padding: '5px 10px', backgroundColor: 'transparent', border: 'none' }}>
+          <button onClick={handleResetClick}
+          // style={{ padding: '5px 10px', backgroundColor: 'transparent', border: 'none' }}
+          >
             <FaUndo size={24} color="black" />
           </button>
         </div>
@@ -486,14 +484,14 @@ const handleSaveContent = (newContent) => {
               key={date}
               onClick={() => setSelectedDate(date)} // 클릭 시 해당 날짜 선택
               className="date-button"
-              style={{
-                padding: '10px',
-                backgroundColor: selectedDate === date ? 'black' : 'lightgrey',
-                color: selectedDate === date ? 'white' : 'black',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-              }}
+            // style={{
+            //   padding: '10px',
+            //   backgroundColor: selectedDate === date ? 'black' : 'lightgrey',
+            //   color: selectedDate === date ? 'white' : 'black',
+            //   border: 'none',
+            //   borderRadius: '5px',
+            //   cursor: 'pointer',
+            // }}
             >
               {new Date(date).toDateString()} {/* 날짜를 문자열 형식으로 표시 */}
             </button>
@@ -503,8 +501,12 @@ const handleSaveContent = (newContent) => {
 
       {/* 지도와 마커 관리 UI */}
       {selectedDate && (
-        <div style={{ display: 'flex', marginTop: '20px' }}>
-          <div style={{ flex: 1, marginRight: '20px' }}>
+        <div
+        // style={{ display: 'flex', marginTop: '20px' }}
+        >
+          <div
+          // style={{ flex: 1, marginRight: '20px' }}
+          >
             <h3>{selectedDate}</h3>
             <Map
               onAddLocation={(newLocation) => handleAddLocation(selectedDate, newLocation)} // 장소 추가 함수
@@ -517,9 +519,11 @@ const handleSaveContent = (newContent) => {
 
           {/* 선택된 마커가 있을 경우 콘텐츠 표시 */}
           {selectedMarker && (
-            <div style={{ flexBasis: '300px' }}>
+            <div
+            // style={{ flexBasis: '300px' }}
+            >
               <Contents selectedMarker={selectedMarker} content={content} onSaveContent={handleSaveContent}
-               />
+              />
             </div>
           )}
         </div>
@@ -527,20 +531,22 @@ const handleSaveContent = (newContent) => {
 
       {/* 마커가 있을 때만 페이지 넘기기 버튼을 렌더링 */}
       {markers.length > 0 && (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+        <div
+        // style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}
+        >
           {/* 이전 버튼 */}
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            style={{
-              padding: '5px 10px',
-              fontSize: '12px',
-              marginRight: '5px',
-              backgroundColor: 'lightgray',
-              border: '1px solid gray',
-              borderRadius: '3px',
-              cursor: currentPage === 1 ? 'default' : 'pointer',
-            }}
+          // style={{
+          //   padding: '5px 10px',
+          //   fontSize: '12px',
+          //   marginRight: '5px',
+          //   backgroundColor: 'lightgray',
+          //   border: '1px solid gray',
+          //   borderRadius: '3px',
+          //   cursor: currentPage === 1 ? 'default' : 'pointer',
+          // }}
           >
             이전
           </button>
@@ -550,16 +556,16 @@ const handleSaveContent = (newContent) => {
             <button
               key={index}
               onClick={() => handlePageChange(index + 1)}
-              style={{
-                padding: '5px 10px',
-                fontSize: '12px',
-                marginRight: '5px',
-                backgroundColor: currentPage === index + 1 ? 'black' : 'white',
-                color: currentPage === index + 1 ? 'white' : 'black',
-                border: '1px solid gray',
-                borderRadius: '3px',
-                cursor: 'pointer',
-              }}
+            // style={{
+            //   padding: '5px 10px',
+            //   fontSize: '12px',
+            //   marginRight: '5px',
+            //   backgroundColor: currentPage === index + 1 ? 'black' : 'white',
+            //   color: currentPage === index + 1 ? 'white' : 'black',
+            //   border: '1px solid gray',
+            //   borderRadius: '3px',
+            //   cursor: 'pointer',
+            // }}
             >
               {index + 1}
             </button>
@@ -569,15 +575,15 @@ const handleSaveContent = (newContent) => {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            style={{
-              padding: '5px 10px',
-              fontSize: '12px',
-              marginLeft: '5px',
-              backgroundColor: 'lightgray',
-              border: '1px solid gray',
-              borderRadius: '3px',
-              cursor: currentPage === totalPages ? 'default' : 'pointer',
-            }}
+          // style={{
+          //   padding: '5px 10px',
+          //   fontSize: '12px',
+          //   marginLeft: '5px',
+          //   backgroundColor: 'lightgray',
+          //   border: '1px solid gray',
+          //   borderRadius: '3px',
+          //   cursor: currentPage === totalPages ? 'default' : 'pointer',
+          // }}
           >
             다음
           </button>

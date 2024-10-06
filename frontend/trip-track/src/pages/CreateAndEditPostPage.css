@@ -1,0 +1,56 @@
+.create-post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 2rem;
+}
+
+.create-post-header input {
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    width: 69%;
+}
+
+.datepicker-and-options {
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+
+}
+
+.datepicker {
+    border: 1px solid #0066ff;
+    border-radius: 0.5rem;
+    text-align: center;
+    width: 15rem;
+    padding: 0.5rem;
+    font-size: 1rem;
+    position: relative;
+}
+
+.start {
+    margin-right: 0.5rem;
+}
+
+.options {
+    border: 1px solid #0066ff;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    position: absolute;
+    z-index: 1000;
+    left: 50%;
+    top: 9.75rem;
+    padding: 0.5rem 1rem;
+}
+
+.cat-title {
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.cats button {
+    margin-left: 0;
+    margin-right: 0.5rem;
+    margin-bottom: 1rem;
+}
