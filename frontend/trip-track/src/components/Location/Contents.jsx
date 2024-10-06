@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types'; // PropTypes로 props 검증
+import './Contents.css';
 
 // 장소별 콘텐츠 추가 컴포넌트
 const Contents = ({ selectedMarker, content, onSaveContent }) => {
@@ -42,25 +43,23 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
   };
 
   return (
-    <div style={{ border: '1px solid #ddd', padding: '15px', marginTop: '20px', borderRadius: '10px' }}>
-      <h3>{selectedMarker.info} - 장소 정보 추가</h3>
+    <div className='location-record'>
 
       {/* 소제목 입력 UI */}
-      <div>
-        <label htmlFor="title">소제목:</label>
+      <div className='location-record-subtitle'>
+        <h3>{selectedMarker.info} - 장소 기록 추가</h3>
         <input
           id="title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="소제목을 입력하세요"
-          style={{ width: '100%', marginTop: '10px', padding: '10px' }}
         />
       </div>
 
       {/* 이미지 업로드 UI */}
-      <div style={{ marginTop: '20px' }}>
-        <label htmlFor="image">이미지 업로드 (최대 10개):</label>
+      <div className='content-image-upload'>
+        <label htmlFor="image">이미지 업로드 (최대 10개): </label>
         <input
           type="file"
           id="image"
@@ -115,47 +114,34 @@ const Contents = ({ selectedMarker, content, onSaveContent }) => {
       )}
 
       {/* 장소 설명 입력 */}
-      <div>
-        <label htmlFor="text">장소 설명:</label>
+      <div className='location-desc'>
+        {/* <label htmlFor="text">장소 설명:</label> */}
         <textarea
+          placeholder='장소에 대한 감상을 작성해주세요'
           id="text"
           rows="4"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          style={{ width: '100%', marginTop: '10px', padding: '10px' }}
         />
       </div>
 
       {/* 저장 버튼 */}
-      <button
-        onClick={handleSave}
-        style={{
-          marginTop: '20px',
-          padding: '10px 20px',
-          backgroundColor: '#28a745',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-      >
-        저장
-      </button>
+      <button className='record-save' onClick={handleSave}>장소 기록 저장</button>
     </div>
   );
 };
 
 // PropTypes로 props 검증
 Contents.propTypes = {
-    selectedMarker: PropTypes.shape({
-      info: PropTypes.string.isRequired, // 마커 정보
-    }).isRequired,
-    content: PropTypes.shape({
-      title: PropTypes.string, // 소제목
-      text: PropTypes.string, // 텍스트 콘텐츠
-      images: PropTypes.arrayOf(PropTypes.any), // 이미지 배열
-    }),
-    onSaveContent: PropTypes.func.isRequired, // 콘텐츠 저장 함수
+  selectedMarker: PropTypes.shape({
+    info: PropTypes.string.isRequired, // 마커 정보
+  }).isRequired,
+  content: PropTypes.shape({
+    title: PropTypes.string, // 소제목
+    text: PropTypes.string, // 텍스트 콘텐츠
+    images: PropTypes.arrayOf(PropTypes.any), // 이미지 배열
+  }),
+  onSaveContent: PropTypes.func.isRequired, // 콘텐츠 저장 함수
 };
 
 export default Contents;
