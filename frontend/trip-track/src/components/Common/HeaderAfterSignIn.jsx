@@ -43,7 +43,7 @@ const HeaderAfterSignIn = ({ onCreatePost }) => {
 
           {/* My Page 버튼 (동적으로 userId 사용) */}
           {userId && (
-            <Link to={`/users/${userId}`}>
+            <Link to={`/my-page/${userId}`}>
               <button style={styles.button}>My Page</button>
             </Link>
           )}

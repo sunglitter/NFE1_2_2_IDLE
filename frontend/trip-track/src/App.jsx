@@ -31,7 +31,7 @@ const App = () => {
 
           {/* PrivateRoute로 UserProfilePage를 보호 */}
           <Route 
-            path="/users/:userId" 
+            path="/my-page/:userId" 
             element={
               <PrivateRoute>
                 <UserProfilePage />

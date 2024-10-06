@@ -48,7 +48,7 @@ const UserProfilePage = () => {
   const handleFollow = async () => {
     if (!currentUser) {
       console.warn("User not logged in");
-      navigate("/login");
+      navigate("/signin");
       return;
     }
 

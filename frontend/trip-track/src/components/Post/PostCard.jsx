@@ -28,6 +28,15 @@ const PostCard = ({ post }) => {
     fetchCountries(); 
   }, [post]);
 
+  // 날짜 포맷팅 함수 (xxxx.xx.xx 형식)
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1 필요
+    const day = String(date.getDate()).padStart(2, '0'); // 일도 2자리로 맞춤
+    return `${year}.${month}.${day}`;
+  };
+
   // 상대 시간 포맷팅 함수
   const formatRelativeDate = (dateString) => {
     const now = new Date();
@@ -74,14 +83,13 @@ const PostCard = ({ post }) => {
       <div className="post-info">
         <h2 className="post-title">{parsedTitle?.title || '제목 없음'}</h2>
         <div className="post-details">
-          <p>여행 장소: {parsedTitle?.dailyLocations?.[0]?.locations?.[0]?.name || '장소 정보 없음'}</p>
+          <p>여행 장소: {countries.length > 0 ? countries.join(', ') : '장소 정보 없음'}</p>
           <p>
-            여행 기간: {parsedTitle?.dates?.[0] ? formatRelativeDate(parsedTitle.dates[0]) : '기간 정보 없음'} ~{' '}
-            {parsedTitle?.dates?.[1] ? formatRelativeDate(parsedTitle.dates[1]) : '기간 정보 없음'}
+            여행 기간: {parsedTitle?.dates?.[0] ? formatDate(parsedTitle.dates[0]) : '기간 정보 없음'} ~{' '}
+            {parsedTitle?.dates?.[1] ? formatDate(parsedTitle.dates[1]) : '기간 정보 없음'}
           </p>
           <p>작성일: {formatRelativeDate(post.createdAt)}</p> {/* 상대 시간으로 작성일 표시 */}
           <p>작성자: {post.author?.fullName || '작성자 정보 없음'}</p>
-          <p>방문한 국가: {countries.length > 0 ? countries.join(', ') : '국가 정보 없음'}</p>
         </div>
         <div className="post-footer">
           <span>❤️ {post.likes?.length || 0} Likes</span>
