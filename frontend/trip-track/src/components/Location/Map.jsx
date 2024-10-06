@@ -170,21 +170,27 @@ const Map = ({ onAddLocation, markers = [], onMarkerClick, onUpdateMarkers }) =>
   };
 
   // 마커 삭제 함수
-  const deleteMarker = (markerIndex) => {
-    // 마커 삭제 후 순서 재정렬
-    setLocalMarkers((prevMarkers) => {
-      const updatedMarkers = prevMarkers.filter((_, index) => index !== markerIndex);
+const deleteMarker = (markerIndex) => {
+  setLocalMarkers((prevMarkers) => {
+    // 선택된 마커 삭제
+    const updatedMarkers = prevMarkers.filter((_, index) => index !== markerIndex);
+    
+    // 마커 순서 재설정
+    const reorderedMarkers = updatedMarkers.map((marker, index) => ({
+      ...marker,
+      order: index + 1, // 마커 순서를 1부터 다시 설정
+    }));
 
-      // Recoil 상태 갱신
-      onUpdateMarkers(updatedMarkers);
+    // 외부 상태 갱신 함수 호출
+    onUpdateMarkers(reorderedMarkers);
 
-      return updatedMarkers.map((marker, index) => ({
-        ...marker,
-        order: index + 1, // 마커 순서 재설정
-      }));
-    });
-    setSelectedMarker(null); // InfoWindow 닫기 위해 선택된 마커 초기화
-  };
+    return reorderedMarkers;
+  });
+  
+  // 선택된 마커 초기화 (InfoWindow 닫기)
+  setSelectedMarker(null);
+};
+
 
   // 마커 순서 변경 함수
   const moveMarker = (fromIndex, toIndex) => {
