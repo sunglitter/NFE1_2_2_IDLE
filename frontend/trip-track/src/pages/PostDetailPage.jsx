@@ -2,23 +2,24 @@ import './PostDetailPage.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import PostHeader from '../components/Post/PostHeader.jsx';
-import PostContent from '../components/Post/PostContent.jsx';
-import Map from '../components/Location/Map'; // 지도 컴포넌트 가져오기
+import Contents from '../components/Location/Contents.jsx';
+import Map from '../components/Location/Map.jsx'; // 지도 컴포넌트 가져오기
 import { useParams } from 'react-router-dom';
 
 const PostDetailPage = () => {
-  const { postId } = useParams();
+  const { postId } = useParams(); // URL에서 postId 가져오기
   const [post, setPost] = useState(null);
   const [mapsData, setMapsData] = useState({}); // 지도 데이터 상태
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
-  const [selectedDay, setSelectedDay] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(0);
-  const [markers, setMarkers] = useState([]); // 선택된 날짜의 마커
+  const [selectedDay, setSelectedDay] = useState(null); // 선택된 날짜 상태
+  const [selectedMarker, setSelectedMarker] = useState(null); // 선택된 마커 상태
+  const [markers, setMarkers] = useState([]); // 선택된 날짜의 마커들
+  const [content, setContent] = useState({ title: '', text: '', images: [] }); // 선택된 마커의 콘텐츠 상태
 
-  // 로그인 상태 확인
-  useEffect(() => {
+   // 로그인 상태 확인
+   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedUserId = localStorage.getItem('userId');
 
@@ -46,24 +47,26 @@ const PostDetailPage = () => {
           },
         });
 
-        const postData = response.data;
+        let postData = response.data;
 
-        // title이 JSON 문자열인 경우 파싱
+        // title이 문자열일 경우 JSON으로 파싱
         if (typeof postData.title === 'string') {
           postData.title = JSON.parse(postData.title);
         }
 
-        setPost(postData);
+        // title.dailyLocations가 있는지 확인하고, 없으면 빈 배열 처리
+        const dailyLocations = postData?.title?.dailyLocations || [];
 
-        // mapsData 설정: dailyLocations를 mapsData로 변환
-        const transformedMapsData = postData.title.dailyLocations.reduce((acc, day) => {
+        // dailyLocations 변환해서 지도 데이터로 저장
+        const transformedMapsData = dailyLocations.reduce((acc, day) => {
           acc[day.date] = day.locations;
           return acc;
         }, {});
 
+        setPost(postData);
         setMapsData(transformedMapsData);
 
-        // 첫 번째 날짜를 기본 선택
+        // 첫 번째 날짜와 그 마커들을 기본 선택
         const firstDate = Object.keys(transformedMapsData)[0];
         setSelectedDay(firstDate);
         setMarkers(transformedMapsData[firstDate]);
@@ -77,106 +80,85 @@ const PostDetailPage = () => {
     fetchPost();
   }, [postId]);
 
-  // 날짜 변경 시 해당 날짜의 마커 업데이트
+  // 선택된 날짜가 변경될 때 해당 마커들을 업데이트
   useEffect(() => {
     if (selectedDay && mapsData[selectedDay]) {
       setMarkers(mapsData[selectedDay]);
-      setSelectedLocation(0); // 날짜 변경 시 첫 번째 장소로 초기화
+      setSelectedMarker(null); // 선택된 마커 초기화
     }
   }, [selectedDay, mapsData]);
 
-  const handlePrevDay = () => {
-    const dates = Object.keys(mapsData);
-    const currentIndex = dates.indexOf(selectedDay);
-    if (currentIndex > 0) {
-      setSelectedDay(dates[currentIndex - 1]);
-    }
+  // 마커 클릭 시 해당 마커의 콘텐츠를 표시
+  const handleMarkerClick = (marker) => {
+    setSelectedMarker(marker); // 마커 선택
+    setContent({
+      title: marker.subtitle,
+      text: marker.description,
+      images: marker.photos || [],
+    });
   };
 
-  const handleNextDay = () => {
-    const dates = Object.keys(mapsData);
-    const currentIndex = dates.indexOf(selectedDay);
-    if (currentIndex < dates.length - 1) {
-      setSelectedDay(dates[currentIndex + 1]);
-    }
-  };
-
-  const handlePrevLocation = () => {
-    if (selectedLocation > 0) {
-      setSelectedLocation(selectedLocation - 1);
-    }
-  };
-
-  const handleNextLocation = () => {
-    if (selectedLocation < markers.length - 1) {
-      setSelectedLocation(selectedLocation + 1);
-    }
-  };
-
+  // 로딩 중일 때 표시
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  // 데이터가 없을 때 표시
   if (!post || !mapsData || Object.keys(mapsData).length === 0) {
     return <div>No post data available.</div>;
   }
 
-  const currentLocation = markers[selectedLocation];
-
   return (
     <div>
-      {user && (
+      {/* 포스트 헤더 */}
+      {post && (
         <PostHeader
           post={{
             ...post,
-            title: typeof post.title === 'object' && post.title.title ? post.title.title : post.title,
+            title: post.title.title, // 제목만 표시
           }}
           user={user}
           isLoggedIn={isLoggedIn}
         />
       )}
 
-      <div className="post-map">
-        <div className="navigation-buttons">
-          <button onClick={handlePrevDay} disabled={Object.keys(mapsData).indexOf(selectedDay) === 0}>
-            &lt; The day before
-          </button>
-          <button
-            onClick={handleNextDay}
-            disabled={Object.keys(mapsData).indexOf(selectedDay) === Object.keys(mapsData).length - 1}
-          >
-            The day after &gt;
-          </button>
-        </div>
+      {/* 지도 및 마커 UI */}
+      {selectedDay && (
+        <div className='map-and-contents'>
+          <div>
+            <Map
+              onAddLocation={() => {}} // PostDetailPage에서는 추가 기능이 없음
+              markers={markers} // 선택된 날짜의 마커들
+              selectedDate={selectedDay}
+              onMarkerClick={handleMarkerClick} // 마커 클릭 시 콘텐츠 표시
+              onUpdateMarkers={() => {}} // PostDetailPage에서는 마커 수정 기능이 없음
+            />
+          </div>
 
-        <div className="place-navigation">
-          <button onClick={handlePrevLocation} disabled={selectedLocation === 0}>
-            &lt; Previous Location
-          </button>
-          <span>
-            {selectedLocation + 1} / {markers.length}
-          </span>
-          <button onClick={handleNextLocation} disabled={selectedLocation === markers.length - 1}>
-            Next Location &gt;
-          </button>
-        </div>
-      </div>
-
-      {/* 지도 컴포넌트 추가: 마커와 선택된 날짜의 장소 표시 */}
-      <div className="map-container">
-        <Map markers={markers} selectedLocation={selectedLocation} />
-      </div>
-
-       {/* 선택된 장소 정보 및 방문 순서 표시 */}
-       {currentLocation && (
-        <div>
-          <p>방문한 장소: {currentLocation.name}</p>
-          <p>방문 순서: {currentLocation.visitedOrder}</p> {/* 방문 순서 표시 */}
+          {/* 선택된 마커의 콘텐츠 표시 */}
+          {selectedMarker && (
+            <Contents
+              selectedMarker={selectedMarker}
+              content={content}
+              onSaveContent={() => {}} // PostDetailPage에서는 수정 기능 없음
+            />
+          )}
         </div>
       )}
 
-      {/* 선택된 장소 정보 표시 */}
-      {currentLocation && <PostContent location={currentLocation} postId={post._id} />}
+      {/* 날짜 변경 버튼 */}
+      <div className="navigation-buttons">
+        <button
+          onClick={() => setSelectedDay(Object.keys(mapsData)[Object.keys(mapsData).indexOf(selectedDay) - 1])}
+          disabled={Object.keys(mapsData).indexOf(selectedDay) === 0}>
+          &lt; 이전 날짜
+        </button>
+        <button
+          onClick={() => setSelectedDay(Object.keys(mapsData)[Object.keys(mapsData).indexOf(selectedDay) + 1])}
+          disabled={Object.keys(mapsData).indexOf(selectedDay) === Object.keys(mapsData).length - 1}>
+          다음 날짜 &gt;
+        </button>
+      </div>
     </div>
   );
 };
