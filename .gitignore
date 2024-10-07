@@ -1,0 +1,4 @@
+
+frontend/trip-track/.env
+.DS_Store
+/frontend/trip-track/node_modules
