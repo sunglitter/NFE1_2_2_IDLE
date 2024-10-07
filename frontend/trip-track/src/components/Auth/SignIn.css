@@ -1,0 +1,66 @@
+.page-container {
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: 
+    "header header"
+    "logo form";
+  min-height: 100vh !important;
+}
+
+.header-before-signin {
+  grid-area: header;
+  width: 100vw;
+  height: 3rem;
+  /* background-color: red; */
+}
+
+.logo {
+  grid-area: logo;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  /* background-color: blue; */
+}
+
+.logo img {
+  width: 75%;
+  height: 75%;
+  object-fit: fill;
+}
+
+.form-container {
+  grid-area: form;
+  /* background-color: green; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.form-container h3 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.form-container input {
+  border: 1px solid #0060ff;
+  border-radius: 0.5rem;
+  width: 16rem;
+  height: 3rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-container button {
+  width: 16rem;
+  margin-left: 0;
+  margin-bottom: 0.5rem;
+}
+
+.form-container .link {
+  text-decoration: underline;
+}

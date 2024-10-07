@@ -1,0 +1,77 @@
+.page-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column; /* 수직 정렬 */
+    align-items: center;
+    width: 100%;
+    background-color: #ffffff; /* Header 아래 전체 영역 배경색 */
+    border-bottom: 1px solid #dddddd;
+    position: fixed; /* 최상단에 고정 */
+    top: 0;
+    left: 50%; /* 화면 중앙 정렬 */
+    transform: translateX(-50%);
+    padding-top: 80px; /* Header 영역만큼의 패딩 추가 */
+    min-height: 100vh;
+  }
+  
+  .search-bar-section {
+    display: flex;
+    justify-content: space-between; /* 좌우 끝에 위치 */
+    align-items: center;
+    width: 1280px; /* 헤더와 동일한 너비 설정 */
+    padding: 20px; /* 상하 여백 */
+    background-color: #ffffff; /* 헤더와 같은 배경색 */
+  }
+
+  .search-bar-and-sort {
+    display: flex;
+    align-items: center;
+    width: 1280px;
+    border-bottom: 1px solid #dddddd; /* 하단에 얇은 테두리 */
+  }
+  
+  .search-bar-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  
+  .sort-dropdown {
+    border: 1px solid #0066FF; /* 테두리 색상 */
+    border-radius: 8px; /* 둥근 테두리 */
+    padding: 8px;
+    background-color: #ffffff; /* 드롭다운 배경 흰색 */
+    color: #007bff; /* Sign out 버튼의 색상과 일치 */
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+.search-results-container {
+    width: 80%; /* 전체 페이지 너비의 80% 사용 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px; /* 검색 영역과의 간격 */
+    color: #000000;
+}
+
+/* h1 스타일 */
+.search-results-text h1 {
+    font-size: 32px; /* 텍스트 크기 */
+    font-weight: bold; /* 볼드체 적용 */
+    margin: 0; /* 여백 제거 */
+    color: #002050; /* 텍스트 색상 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+/* h2 스타일 */
+.search-results-text h2 {
+    font-size: 18px; /* 텍스트 크기 */
+    color: #666666; /* 텍스트 색상 */
+    margin: 10px 0 0; /* 여백 제거 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+  .post-grid-container {
+    width: 1280px; /* 컨텐츠 영역 너비 */
+    margin-top: 20px; /* 검색 영역과의 간격 */
+  }

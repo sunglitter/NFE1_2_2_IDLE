@@ -1,0 +1,96 @@
+.content-title {
+    font-size: 1.25rem;
+}
+
+.content-slides {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.content-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+
+.content-slide img {
+    /* 사진 일부 잘림 */
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.content-desc {
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    line-height: 1.75rem;
+}
+
+.content-community {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 0 0.5rem;
+}
+
+.content-community button {
+    min-width: 5rem;
+    height: 3rem;
+    line-height: 3rem;
+    padding: 0 1rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+}
+
+.content-comments {
+    border: 1px solid #0066ff;
+    background-color: #fff;
+    cursor: pointer;
+    color: #0066ff;
+}
+
+.content-comments:hover {
+    background-color: #0066ff;
+    color: #fff;
+}
+
+.content-likes {
+    border: 1px solid #ec221f;
+    background-color: #fff;
+    cursor: pointer;
+    color: #ec221f;
+}
+
+.content-likes:hover {
+    background-color: #ec221f;
+    color: #fff;
+}
+
+.content-pagination {
+    position: fixed;
+    bottom: 1rem;
+    width: calc(50% - 2.5rem);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* gap: 0 1rem; */
+    padding: .5rem 0;
+}
+
+.content-pagination button {
+    width: auto;
+    height: 3rem;
+    padding: 0 1rem; 
+    font-size: 1rem;
+    border: 1px solid #0066ff;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    cursor: pointer;
+    color: #0066ff;
+}
+
+.content-pagination button:hover {
+    background-color: #0066ff;
+    color: #fff;
+}

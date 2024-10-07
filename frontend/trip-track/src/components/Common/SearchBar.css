@@ -1,0 +1,36 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: none;
+}
+
+.tab-container{
+    display: flex;
+}
+
+.dropdown {
+    margin-right: 0.5rem;
+    position: relative;
+    
+}
+
+.dropdown button {
+    border: none;
+}
+
+.dropdown-menu {
+    position: absolute;
+    width: 100%;
+    top: calc(100% + 0.5rem);
+    border: 1px solid #0060ff;
+    text-align: center;
+    list-style: none;
+}
+
+.tab-button {
+    margin-left: 0;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #0060ff;
+}

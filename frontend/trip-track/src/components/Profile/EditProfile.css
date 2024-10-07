@@ -1,0 +1,119 @@
+/* edit-profile 전체 레이아웃 */
+.edit-profile {
+  padding: 0;
+  display: grid !important;
+  grid-template-rows: auto 1fr !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-areas:
+    "header header"
+    "image form";
+  width: 100vw;
+  min-height: 100vh;
+}
+
+.header-after-signin {
+  grid-area: header;
+  width: 100vw;
+  height: 3rem;
+
+}
+
+/* 프로필 이미지와 관련된 컨테이너 */
+.left-container {
+  grid-area: image;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  /* background-color: aqua; */
+}
+
+.profile-image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; /* 둥근 프로필 이미지 */
+  object-fit: cover;
+}
+
+.edit-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px; /* 오른쪽에 배치 */
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  background-color: #002050;
+}
+
+/* 프로필 수정 폼 */
+.profile-details {
+  /* background-color: red;  */
+  grid-area: form;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.profile-details h3 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.profile-details input {
+  border: 1px solid #0060ff;
+  border-radius: 0.5rem;
+  width: 16rem;
+  height: 3rem;
+  padding: 0.75rem; /* 패딩을 약간 줄여서 조정 */
+  margin-bottom: 1rem;
+}
+
+.profile-details .save-button {
+  width: 16rem;
+  margin-left: 0;
+  margin-bottom: 0.5rem;
+  background-color: #0066ff;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #fff;
+  color: #0066ff;
+  border: 1px solid #0066ff;
+}
+
+.profile-details form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 폼을 중앙 정렬 */
+}
+
+/* 오류 메시지 및 성공 메시지 스타일 */
+.error {
+  color: red;
+  margin-bottom: 1rem;
+}
+
+.message {
+  color: green;
+  margin-bottom: 1rem;
+}
